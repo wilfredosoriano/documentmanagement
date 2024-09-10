@@ -2,6 +2,11 @@ const express = require('express');
 const claimableDocumentModel = require('../models/claimableDocumentModel');
 const documentModel = require('../models/documentModel');
 const appointmentModel = require('../models/appointmentModel');
+const userModel = require('../models/userModel');
+const nodemailer = require('nodemailer');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -11,6 +16,62 @@ const isToday = (someDate) => {
       someDate.getMonth() === today.getMonth() &&
       someDate.getFullYear() === today.getFullYear();
 }
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../../frontend/src/assets/files')); // Path of folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); // original name for the file
+    },
+});
+
+const upload = multer({ storage });
+
+router.post('/uploadPdf', upload.single('file'), async (req, res) => {
+
+    const { userId } = req.body;
+
+    const user = await userModel.findOne({ _id: userId});
+
+    const filePath = path.join(__dirname, '../../frontend/src/assets/files', req.file.filename);
+
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+        user: 'wilfredomailer@gmail.com',
+        pass: 'ibvxtgdimaxpiusz',
+        },
+    });
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(400).json({ error: 'File not found' });
+    }
+
+    try {
+        let info = await transporter.sendMail({
+            from: 'wilfredomailer@gmail.com',
+            to: user.email,
+            subject: 'Invoice',
+            text: 'Please download and print the attached pdf file and sumbit the printed copy to the registrar to claim your document.',
+            attachments: [
+                {
+                filename: req.file.filename,
+                path: filePath,
+                },
+            ],
+        });
+
+            res.status(200).json({ message: 'Email sent successfully', info: info });
+        } catch (error) {
+            console.error('Error sending email:', error);
+            res.status(500).json({ error: 'Failed to send email', details: error.message });
+        }
+});
 
 router.get('/', async (req, res) => {
     try {
@@ -85,6 +146,5 @@ router.put('/claimed/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to update the document' });    
     }
 });
-
 
 module.exports = router;

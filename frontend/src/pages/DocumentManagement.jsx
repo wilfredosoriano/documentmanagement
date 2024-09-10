@@ -23,15 +23,6 @@ const fetchDocumentCounts = () => {
   .catch(error => console.error('Error fetching document counts:', error));
 }
 
-  // useEffect(() => {
-  //   axios.get('http://localhost:5000/api/titles')
-  //   .then(response => {
-  //     setData(response.data);
-  //   }).catch(error => {
-  //     console.error('Error fetching documents: ', error);
-  //   });
-  // },[])
-
   const handleAddDocument = (documentData) => {
     axios.post('http://localhost:5000/api/titles', documentData)
       .then(response => {
@@ -81,7 +72,6 @@ const fetchDocumentCounts = () => {
     axios.put(`http://localhost:5000/api/titles/${documentData.id}`, documentData)
       .then(response => {
         const updatedDocument = response.data;
-        console.log(updatedDocument);
         setData(prevData => prevData.map(doc => (doc._id === updatedDocument._id ? updatedDocument : doc)));
         toast({
           description: "Document edited successfully.",

@@ -23,7 +23,7 @@ function AppContent() {
     '/changePassword', 
     '/mobileDocuments', 
     '/mobileTransactions', 
-    '/mobileRequestTicket'
+    '/mobileRequestTicket',
   ];
   
   const hideSidebar = hiddenPaths.includes(location.pathname);

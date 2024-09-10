@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './mobileComponents/Header';
 import Navigation from './mobileComponents/Navigation';
 import DocumentBox from './mobileComponents/DocumentBox';
@@ -15,13 +15,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useUser } from '@/components/Contexts/UserProvider';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import { LoaderCircle } from 'lucide-react';
+
 
 const MobileDocuments = () => {
   const { toast } = useToast();
   const [documentDetails, setDocumentDetails] = useState('');
   const [isDialogReserve, setIsDialogReserve] = useState(false);
   const [filteredDcouments, setFilteredDocuments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -33,7 +36,6 @@ const MobileDocuments = () => {
     const savedMenuState = localStorage.getItem('menuOpen');
     return savedMenuState ? JSON.parse(savedMenuState) : false;
   });
-
 
   const DateToday = () => {
       const currentDate = new Date();
@@ -72,16 +74,21 @@ const MobileDocuments = () => {
   };
 
   const handleConfirmReserve = (id, documentTitle) => {
+    setIsLoading(true);
     axios.post(`http://localhost:5000/api/appointments/reserve/${id}`, { userId: user.userId, document: documentTitle })
     .then(() => {
-      setIsDialogReserve(false);
-      toast({
-        title: "Successfully reserved a document.",
-        description: DateToday(),
-      });
+      setTimeout(() => {
+        setIsDialogReserve(false);
+        setIsLoading(false);
+        toast({
+          title: "Successfully reserved a document.",
+          description: DateToday(),
+        });
+      }, 3000);
     }).catch(error => {
       if(error.response && error.response.status === 400){
         setIsDialogReserve(false);
+        setIsLoading(false);
         toast({
           title: "Reservation Error",
           variant: 'destructive',
@@ -93,23 +100,25 @@ const MobileDocuments = () => {
     })
   };
 
+  
+
   return (
     <div>
-      <Header toggleMenu={toggleMenu} setFilteredDocuments={setFilteredDocuments} />
-      <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
-      <div className={`overflow-auto p-4 mt-[65px] max-sm:mb-16 ${menuOpen ? 'mr-[240px]' : 'mr-[96px] max-sm:mr-0'} `}>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {filteredDcouments.map((doc) => (
-            <DocumentBox
-              key={doc._id}
-              document={doc.title}
-              appointments={doc.count}
-              imageUrl={doc.image}
-              handleReserve={() => handleReserve(doc._id)}
-            />
-          ))}
+        <Header toggleMenu={toggleMenu} setFilteredDocuments={setFilteredDocuments} />
+        <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
+        <div className={`overflow-auto p-4 mt-[65px] max-sm:mb-16 ${menuOpen ? 'mr-[240px]' : 'mr-[96px] max-sm:mr-0'} `}>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+            {filteredDcouments.map((doc) => (
+              <DocumentBox
+                key={doc._id}
+                document={doc.title}
+                appointments={doc.count}
+                imageUrl={doc.image}
+                handleReserve={() => handleReserve(doc._id)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
       <Dialog open={isDialogReserve} onOpenChange={setIsDialogReserve}>
         <DialogContent className="w-10/12">
@@ -125,11 +134,16 @@ const MobileDocuments = () => {
                 Close
               </Button>
             </DialogClose>
-             <Button onClick={() => handleConfirmReserve(documentDetails._id, documentDetails.title)}>Reserve</Button>
+              <Button onClick={() => handleConfirmReserve(documentDetails._id, documentDetails.title)}>
+                {isLoading ? (
+                  <LoaderCircle className='animate-spin'/>
+                ) : (
+                  <p>Reserve</p>
+                )}
+              </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

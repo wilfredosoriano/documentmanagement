@@ -72,7 +72,7 @@ router.post('/reserve/:id', async (req, res) => {
         const { id } = req.params;
         const { userId, document } = req.body;
 
-        const user = await userModel.findById(userId);
+        const user = await userModel.findById({ _id: userId });
 
         const reserve = await documentTitleModel.findById(id);
 
