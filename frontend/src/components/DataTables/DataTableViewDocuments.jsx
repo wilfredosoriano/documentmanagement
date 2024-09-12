@@ -390,35 +390,6 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
         </Button>
       </div>
 
-      {/* <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center">Document Details</DialogTitle>
-            <DialogDescription className="text-center">
-              You can view all the details here.
-            </DialogDescription>
-          </DialogHeader>
-          {document && (
-            <div className='flex flex-col gap-2'>
-                <div className='flex flex-row items-center gap-2'>
-                  <span className='text-muted-foreground'>Tracking ID: </span>
-                    {document.uniqueId}
-                    {isCopied ? (
-                      <LuCopyCheck />
-                    ) : (
-                      <LuCopy className='cursor-pointer' onClick={() => handleCopy(document.uniqueId)}/>
-                    )} 
-                </div>
-                <div><span className='text-muted-foreground'>Document: </span>{document.document}</div>
-                <div><span className='text-muted-foreground'>Name: </span>{document.name}</div>
-                <div><span className='text-muted-foreground'>Address: </span>{document.address}</div>
-                <div><span className='text-muted-foreground'>Reserved Date: </span>{formatDate(document.reservedDate)}</div>
-                <div><span className='text-muted-foreground'>Date Approved: </span>{formatDate(document.createdDate)}</div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog> */}
-
       <CustomDialog 
         Details="Document Details"
         open={isDialogOpen}

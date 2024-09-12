@@ -1,6 +1,7 @@
 const express = require('express');
 const documentModel = require('../models/documentModel');
 const claimableDocumentModel = require('../models/claimableDocumentModel');
+const transactionModel = require('../models/transactionModel');
 
 const router = express.Router();
 
@@ -97,6 +98,15 @@ router.post('/claim/:id', async (req, res) => {
 
     document.status = 'ready to claim';
     await document.save();
+
+    const transaction = await transactionModel.findOne({ uniqueId: document.uniqueId });
+        
+    if (!transaction) {
+        return res.status(404).json({ error: 'Transaction not found' });
+    }
+    
+    transaction.status = "ready to claim";
+    await transaction.save();
 
     res.status(201).json({ newDocument, updatedDocument: document });
 

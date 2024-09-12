@@ -3,6 +3,7 @@ const appointmentModel = require('../models/appointmentModel');
 const documentModel = require('../models/documentModel');
 const documentTitleModel = require('../models/documentTitleModel');
 const userModel = require('../models/userModel');
+const transactionModel = require('../models/transactionModel');
 
 const router = express.Router();
 
@@ -59,6 +60,15 @@ router.post('/:id', async (req, res) => {
         appointment.status = "approved";
         await appointment.save();
 
+        const transaction = await transactionModel.findOne({ uniqueId: appointment._id });
+        
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transaction not found' });
+        }
+        
+        transaction.status = "preparing";
+        await transaction.save();
+
         res.status(201).json({ newDocument, updatedAppointment: appointment });
         
     } catch (error) {
@@ -82,16 +92,27 @@ router.post('/reserve/:id', async (req, res) => {
             return res.status(400).json({ message: 'You have already reserved this document' });
         }
 
+        //reserve the document
         const reservedDocument = new appointmentModel({
             userId: userId,
             document: reserve.title,
             name: `${user.firstname} ${user.middlename} ${user.lastname}`,
             address: user.address,
         });
+        const savedReservation = await reservedDocument.save();
 
-        await reservedDocument.save();
+        // Save the transaction to the user history with the appointment ID
+        if(savedReservation._id){
+            const transactionHistory = new transactionModel({
+                uniqueId: savedReservation._id,
+                userId: userId,
+                document: reserve.title,
+            });
 
-        res.status(201).json(reservedDocument);
+            await transactionHistory.save();
+        }
+
+        res.status(201).json(savedReservation);
 
     } catch (error) {
         console.error('Error reserving document: ', error);

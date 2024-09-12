@@ -2,11 +2,13 @@ const express = require('express');
 const claimableDocumentModel = require('../models/claimableDocumentModel');
 const documentModel = require('../models/documentModel');
 const appointmentModel = require('../models/appointmentModel');
+const transactionModel = require('../models/transactionModel');
 const userModel = require('../models/userModel');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+
 
 const router = express.Router();
 
@@ -134,6 +136,15 @@ router.put('/claimed/:id', async (req, res) => {
 
         appointmentUserId.userId = null;
         await appointmentUserId.save();
+
+        const transaction = await transactionModel.findOne({ uniqueId: documentStatus.uniqueId });
+        
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transaction not found' });
+        }
+        
+        transaction.status = "claimed";
+        await transaction.save();
 
         if (!document) {
             return res.status(404).json({ error: 'Document not found' });

@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const documentTitleRoutes = require('./routes/documentTitleRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const claimableDocumentRoutes = require('./routes/claimableDocumentRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/titles', documentTitleRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/claimableDocuments', claimableDocumentRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
