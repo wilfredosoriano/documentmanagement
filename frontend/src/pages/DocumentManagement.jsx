@@ -88,7 +88,6 @@ const fetchDocumentCounts = () => {
   };  
 
   const handleViewDocuments = (document) => {
-    console.log(document);
     navigate('/viewDocuments', { state: { document} });
   };
 

@@ -28,7 +28,7 @@ import { Button } from '../ui/button';
 import { LuMoreHorizontal } from 'react-icons/lu';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import axios from 'axios';
-import OrderTracking from '../OrderTracking';
+import DocumentTracking from '../DocumentTracking';
 
 const DataTableTransaction = ({ data }) => {
 
@@ -37,6 +37,7 @@ const DataTableTransaction = ({ data }) => {
     const [isDialogStatus, setIsDialogStatus] = useState(false);
     const [currentStatus, setCurrentStatus] = useState('');
     const [trackingId, setTrackingId] = useState('');
+    const [claimedDate, setClaimedDate] = useState('');
     
     const formatDate = (dateString) => {
       const date = new Date(dateString);
@@ -61,7 +62,10 @@ const DataTableTransaction = ({ data }) => {
         setIsDialogStatus(true);
         axios.get(`http://localhost:5000/api/transactions/status/${id}`)
         .then(response => {
-            setCurrentStatus(response.data.status);
+          const status = response.data.status;
+          const claimedDate = response.data.claimedDate;
+          setCurrentStatus(status);
+          setClaimedDate(claimedDate);
         })
         .catch(error => {
             console.error('Error fetching document status: ', error);
@@ -206,7 +210,7 @@ const DataTableTransaction = ({ data }) => {
               You can track the status of the document here.
             </DialogDescription>
           </DialogHeader>
-          <OrderTracking status={currentStatus} />
+          <DocumentTracking status={currentStatus} claimedDate={claimedDate}/>
         </DialogContent>
       </Dialog>
     </div>

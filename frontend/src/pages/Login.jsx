@@ -24,7 +24,6 @@ const Login = () => {
             const userData = { email, role, userId };
             login(userData);
             localStorage.setItem('token', token);
-            console.log(userData);
 
             if (role === 'admin') {
                 navigate('/dashboard');

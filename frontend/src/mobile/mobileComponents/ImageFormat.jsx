@@ -1,10 +1,10 @@
 import React from 'react'
 
-export default function ImageFormat({ src }) {
+export default function ImageFormat({ src, className }) {
 
 const formattedImageUrl = `data:image/jpeg;base64,${src}`;
 
   return (
-    <img src={formattedImageUrl} className='w-14 h-14 object-cover' />
+    <img src={formattedImageUrl} className={className}/>
   )
 }

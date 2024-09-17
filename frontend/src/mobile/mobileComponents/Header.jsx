@@ -52,6 +52,10 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
     console.log(results);
     setFilteredDocuments(results);
   };
+
+  const handleReserve = (id) => {
+    console.log(id);
+  };
   
   const includeSearchbar = '/mobileDocuments';
  
@@ -86,8 +90,9 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
                   <div
                     key={doc._id}
                     className='flex flex-row items-center gap-2 px-2 py-1 cursor-pointer hover:bg-gray-200'
+                    onClick={() => handleReserve(doc._id)}
                   >
-                    <ImageFormat src={doc.image}/>
+                    <ImageFormat src={doc.image} className='w-14 h-14 object-cover'/>
                     {doc.title}
                   </div>
                 ))
@@ -120,8 +125,9 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
                 <div
                   key={doc._id}
                   className='flex flex-row items-center gap-2 px-2 py-1 cursor-pointer hover:bg-gray-200'
+                  onClick={() => handleReserve(doc._id)}
                 >
-                  <ImageFormat src={doc.image}/>
+                  <ImageFormat src={doc.image} className='w-14 h-14 object-cover'/>
                   {doc.title}
                 </div>
               ))
@@ -138,11 +144,11 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
       )}
 
       {!showSearch && (
-      <div className='flex flex-row items-center ml-20 max-md:ml-10'>
+      <div className='flex flex-row items-center ml-20 max-md:ml-10 justify-between gap-10'>
         {includeSearchbar === location.pathname && <LuSearch size={20} className='mr-5 sm:hidden cursor-pointer' onClick={() => setShowSearch(true)}/> } 
 
-        <LogOut/>
-
+        <LogOut />
+ 
         <button onClick={toggleMenu} className='cursor-pointer hover:bg-slate-100 p-2 mr-4 rounded-full max-sm:hidden'>
           <LuMenu size={20} />
         </button>

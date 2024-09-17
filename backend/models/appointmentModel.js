@@ -6,6 +6,7 @@ const appointmentSchema = new mongoose.Schema({
     name: { type: String, required: true },
     address: { type: String, required: true },
     status: { type: String, default: 'pending', required: true },
+    claimedDate: String,
     reservedDate: { type: Date, default: Date.now, required: true },
     createdDate: { type: Date, default: Date.now, required: true }
 });

@@ -42,7 +42,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import CustomAlertDialog from '../DialogBoxes/CustomAlertDialog';
-import OrderTracking from '../OrderTracking';
+import DocumentTracking from '../DocumentTracking';
 import axios from 'axios';
 
 const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDelete }) => {
@@ -55,6 +55,7 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
     const [trackingId, setTrackingId] = useState('');
     const [isDialogStatus, setIsDialogStatus] = useState(false);
     const [currentStatus, setCurrentStatus] = useState('');
+    const [claimedDate, setClaimedDate] = useState('');
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -77,10 +78,12 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
     const handleViewStatus = (id) => {
         setTrackingId(id);
         setIsDialogStatus(true);
-        console.log(id);
         axios.get(`http://localhost:5000/api/appointments/${id}`)
           .then(response => {
-            setCurrentStatus(response.data.status);
+            const status = response.data.status;
+            const claimedDate = response.data.claimedDate;
+            setCurrentStatus(status);
+            setClaimedDate(claimedDate);
           })
           .catch(error => {
             console.error('Error fetching appointment status: ', error);
@@ -137,7 +140,19 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
                 id: 'status',
                 header: 'Status',
                 accessorKey: 'status',
-                cell: ({ row }) => ( <Badge variant={`${row.original.status === 'approved' ? 'green' : 'destructive'}`} > {row.getValue('status')} </Badge> )
+                cell: ({ row }) => ( 
+                <Badge 
+                    variant={`${row.original.status === 'approved'  || row.original.status === 'ready to claim' || row.original.status === 'claimed' ? 'green' : 'destructive'}`} > 
+                    {row.original.status === 'approved' || row.original.status === 'ready to claim' || row.original.status === 'claimed' ? (
+                        <>
+                        approved
+                        </>
+                    ) : (
+                        <>
+                        pending
+                        </>
+                    )}
+                </Badge> )
             },
             {
                 id: 'reservedDate',
@@ -318,7 +333,7 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
                 You can track the status of the document here.
                 </DialogDescription>
             </DialogHeader>
-            <OrderTracking status={currentStatus} />
+            <DocumentTracking status={currentStatus} claimedDate={claimedDate}/>
             </DialogContent>
         </Dialog>
 

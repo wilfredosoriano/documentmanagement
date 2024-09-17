@@ -17,6 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useUser } from '@/components/Contexts/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import { LoaderCircle } from 'lucide-react';
+import { LuCheckCircle } from 'react-icons/lu';
 
 
 const MobileDocuments = () => {
@@ -83,6 +84,9 @@ const MobileDocuments = () => {
         toast({
           title: "Successfully reserved a document.",
           description: DateToday(),
+          action: (
+            <LuCheckCircle size={20} color='green'/>
+          ),
         });
       }, 3000);
     }).catch(error => {
@@ -134,7 +138,7 @@ const MobileDocuments = () => {
                 Close
               </Button>
             </DialogClose>
-              <Button onClick={() => handleConfirmReserve(documentDetails._id, documentDetails.title)}>
+              <Button onClick={() => handleConfirmReserve(documentDetails._id, documentDetails.title)} disabled={isLoading}>
                 {isLoading ? (
                   <LoaderCircle className='animate-spin'/>
                 ) : (

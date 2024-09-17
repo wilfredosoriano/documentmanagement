@@ -3,8 +3,12 @@ const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const secretKey = 'wilfredo1229';
+const multer = require('multer');
 
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -73,7 +77,62 @@ router.post('/changePassword', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.put('/updatePassword', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    const user = await userModel.findById(userId);
+    if(!user){
+      return res.status(404).json({ error: 'User not found' });
+    };
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if(!isMatch){
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    };
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password has been changed.' });
+
+  } catch (error) {
+    console.error('Error updating password: ', error);
+    res.status(500).json({ error: 'Failed to update password.' });
+  }
+
+});
+
+router.put('/updateProfile', upload.single('profile'), async (req, res) => {
+  try {
+    const { userId, firstname } = req.body;
+    const profile = req.file;
+
+    const imageBase64 = profile ? profile.buffer.toString('base64') : null;
+
+    const updatedUser  = await userModel.findByIdAndUpdate(userId, 
+      { 
+        firstname,
+        ...(imageBase64 && { profile: imageBase64 }) 
+      },
+      { new: true }
+    );
+    if(!updatedUser){
+      return res.status(404).json({ error: 'User not found' });
+    };
+
+    return res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+
+  } catch (error) {
+    console.error('Error updating profile: ', error);
+    res.status(500).json({ error: 'Failed to update profile.' });
+  }
+});
+
+router.get('/info/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -149,9 +208,10 @@ router.put('/:id', async (req, res) => {
 
     res.json(updatedUser);
   } catch (error) {
-    console.error('Error updating usert: ', error);
+    console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Failed to update user.' });
   }
 });
+
 
 module.exports = router;

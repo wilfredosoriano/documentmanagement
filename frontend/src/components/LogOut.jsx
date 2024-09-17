@@ -25,15 +25,15 @@ const LogOut = () => {
     <AlertDialog>
         <AlertDialogTrigger>
           {user ? (
-          <div className='mr-20 max-sm:mr-0 border px-3 py-1 rounded-md cursor-pointer text-sm whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary'
+          <div className='max-sm:mr-0 border px-3 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary'
           >Sign out</div>
           ) : (
-            <div className='mr-20 max-sm:mr-0 border px-3 py-1 rounded-md cursor-pointer text-sm whitespace-nowrap hover:bg-primary hover:text-primary-foreground'
+            <div className='max-sm:mr-0 border px-3 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap hover:bg-primary hover:text-primary-foreground'
               onClick={navigateToLogin}
             >Sign in</div>
           )}
         </AlertDialogTrigger>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-10/12">
             <AlertDialogHeader>
             <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
             <AlertDialogDescription>

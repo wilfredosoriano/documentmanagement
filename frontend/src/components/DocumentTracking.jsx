@@ -1,14 +1,33 @@
 import React from 'react';
 import { GrDocumentTime, GrDocumentVerified, GrDocumentTransfer, GrDocumentUser } from "react-icons/gr";
 
-const OrderTracking = ({ status, claimedDate }) => {
+const DocumentTracking = ({ status, claimedDate }) => {
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(date);
+
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    }).format(date);
+
+    return `${formattedDate} ${formattedTime}`;
+  };
+
   return (
     <div className='flex flex-col gap-12 relative'>
       <div className='flex flex-row items-start relative'>
         <div className={`rounded-full p-2 mr-5 mt-1 ${status === 'pending' || status === 'preparing' || status === 'ready to claim' || status === 'claimed' || status === 'approved' ? 'bg-slate-600' : 'bg-slate-300'}`}>
           <GrDocumentUser color='white' size={20}/>
         </div>
-        <span className={`w-0.5 ${status === 'preparing' || status === 'ready to claim' || status === 'claimed' ? 'bg-slate-600' : 'bg-slate-300'} h-full absolute top-12 left-4`}></span>
+        <span className={`w-0.5 ${status === 'preparing' || status === 'ready to claim' || status === 'claimed' || status === 'approved' ? 'bg-slate-600' : 'bg-slate-300'} h-full absolute top-12 left-4`}></span>
         <div>
           <h1 className='max-sm:text-sm'>Pending</h1>
           <p className='text-sm text-muted-foreground max-sm:text-xs'>Wait for your document to be approve</p>
@@ -40,11 +59,11 @@ const OrderTracking = ({ status, claimedDate }) => {
         </div>
         <div>
           <h1 className='max-sm:text-sm'>Claimed</h1>
-          <p className='text-sm text-muted-foreground max-sm:text-xs'> {claimedDate ? `Document has been claimed on ${claimedDate}` : 'Please wait until the document to set as claimed' } </p>
+          <p className='text-sm text-muted-foreground max-sm:text-xs'> {claimedDate ? `Document has been claimed on ${formatDate(claimedDate)}` : 'Please wait until the document to set as claimed' } </p>
         </div>
       </div>
     </div>
   )
 }
 
-export default OrderTracking;
+export default DocumentTracking;

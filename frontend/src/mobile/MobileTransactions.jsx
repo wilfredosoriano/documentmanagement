@@ -3,10 +3,13 @@ import Header from './mobileComponents/Header';
 import Navigation from './mobileComponents/Navigation';
 import DataTableTransaction from '@/components/DataTables/DataTableTransaction';
 import axios from 'axios';
+import { useUser } from '@/components/Contexts/UserProvider';
 
 const MobileTransactions = () => {
 
   const [data, setData] = useState([]);
+  const { user } = useUser();
+  const userId = user?.userId;
 
   const [menuOpen, setMenuOpen] = useState(() => {
     const savedMenuState = localStorage.getItem('menuOpen');
@@ -18,14 +21,16 @@ const MobileTransactions = () => {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions')
-    .then(response => {
-      setData(response.data);
-    })
-    .catch(error => {
-      console.error('Error fetching transactions: ', error);
-    });
-  }, []);
+    if(userId){
+      axios.get(`http://localhost:5000/api/transactions/history/${userId}`)
+      .then(response => {
+        setData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching transactions: ', error);
+      });
+    }
+  }, [userId]);
 
 
   return (

@@ -47,7 +47,7 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { useToast } from '../ui/use-toast';
-import OrderTracking from '../OrderTracking';
+import DocumentTracking from '../DocumentTracking';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import {
   Popover,
@@ -74,6 +74,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   const [calendarDate, setCalendarDate] = useState('');
   const [dateError, setDateError] = useState('');
   const [documentId, setDocumentId] = useState('');
+  const [claimedDate, setClaimedDate] = useState('');
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -176,10 +177,12 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   const handleViewStatus = (id) => {
     setTrackingId(id);
     setIsDialogStatus(true);
-    console.log(id);
     axios.get(`http://localhost:5000/api/documents/${id}`)
       .then(response => {
-        setCurrentStatus(response.data.status);
+        const status = response.data.status;
+        const claimedDate = response.data.claimedDate;
+        setCurrentStatus(status);
+        setClaimedDate(claimedDate);
       })
       .catch(error => {
         console.error('Error fetching document status: ', error);
@@ -426,7 +429,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
               You can track the status of the document here.
             </DialogDescription>
           </DialogHeader>
-          <OrderTracking status={currentStatus} />
+          <DocumentTracking status={currentStatus} claimedDate={claimedDate}/>
         </DialogContent>
       </Dialog>
 

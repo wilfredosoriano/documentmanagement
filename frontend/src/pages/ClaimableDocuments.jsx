@@ -21,8 +21,8 @@ const ClaimableDocuments = () => {
         });
     },[])
 
-    const handleClaimConfirm = (id, userId, documentTitle, formatDate, trackingId) => {
-      axios.put(`http://localhost:5000/api/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, claimedDate: formatDate, uniqueId: trackingId })
+    const handleClaimConfirm = (id, userId, documentTitle, trackingId) => {
+      axios.put(`http://localhost:5000/api/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, uniqueId: trackingId })
       .then(response => {
         const { updatedDocument } = response.data;
 

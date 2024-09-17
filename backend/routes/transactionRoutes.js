@@ -3,8 +3,9 @@ const transactionModel = require('../models/transactionModel');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    transactionModel.find()
+router.get('/history/:id', (req, res) => {
+    const { id } = req.params;
+    transactionModel.find({ userId: id })
     .then(transactions => {
         res.status(200).json(transactions);
     })

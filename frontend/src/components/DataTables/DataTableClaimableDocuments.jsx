@@ -47,7 +47,7 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { useToast } from '../ui/use-toast';
-import OrderTracking from '../OrderTracking';
+import DocumentTracking from '../DocumentTracking';
 
 const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, handleClaimConfirm }) => {
   const { toast } = useToast();
@@ -130,7 +130,7 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
   };
 
   const handleDialogClaimConfirm = (id, userId, documentTitle) => {
-    handleClaimConfirm(id, userId, documentTitle, formatDate, trackingId);
+    handleClaimConfirm(id, userId, documentTitle, trackingId);
     setIsDialogClaim(false);
   };
 
@@ -139,8 +139,10 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
     setIsDialogStatus(true);
     axios.get(`http://localhost:5000/api/claimableDocuments/${id}`)
       .then(response => {
-        setCurrentStatus(response.data.status);
-        setClaimedDate(response.data.claimedDate);
+        const status = response.data.status;
+        const claimedDate = response.data.claimedDate;
+        setCurrentStatus(status);
+        setClaimedDate(claimedDate);
       })
       .catch(error => {
         console.error('Error fetching document status: ', error);
@@ -393,7 +395,7 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
               You can track the status of the document here.
             </DialogDescription>
           </DialogHeader>
-          <OrderTracking status={currentStatus} claimedDate={claimedDate}/>
+          <DocumentTracking status={currentStatus} claimedDate={claimedDate}/>
         </DialogContent>
       </Dialog>
     

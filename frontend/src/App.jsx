@@ -14,6 +14,7 @@ import MobileDocuments from './mobile/MobileDocuments';
 import MobileTransactions from './mobile/MobileTransactions';
 import { UserProvider } from './components/Contexts/UserProvider';
 import MobileRequestTicket from './mobile/MobileRequestTicket';
+import MobileProfile from './mobile/MobileProfile';
 
 function AppContent() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function AppContent() {
     '/mobileDocuments', 
     '/mobileTransactions', 
     '/mobileRequestTicket',
+    '/mobileProfile',
   ];
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
@@ -47,6 +49,7 @@ function AppContent() {
           <Route path='/mobileDocuments' element={<MobileDocuments />} />
           <Route path='/mobileTransactions' element={<MobileTransactions />} />
           <Route path='/mobileRequestTicket' element={<MobileRequestTicket />} />
+          <Route path='/mobileProfile' element={<MobileProfile />} />
         </Routes>
       </div>
     </div>

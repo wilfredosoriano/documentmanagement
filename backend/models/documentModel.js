@@ -7,6 +7,7 @@ const documentSchema = new mongoose.Schema({
     name: { type: String, required: true },
     address: { type: String, required: true },
     status: { type: String, default: 'preparing', required: true },
+    claimedDate: String,
     reservedDate: { type: String, required: true },
     createdDate: { type: Date, default: Date.now, required: true },
 });

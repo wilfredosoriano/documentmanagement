@@ -2,6 +2,7 @@ const express = require('express');
 const documentModel = require('../models/documentModel');
 const claimableDocumentModel = require('../models/claimableDocumentModel');
 const transactionModel = require('../models/transactionModel');
+const appointmentModel = require('../models/appointmentModel');
 
 const router = express.Router();
 
@@ -99,6 +100,7 @@ router.post('/claim/:id', async (req, res) => {
     document.status = 'ready to claim';
     await document.save();
 
+    // Update transaction status
     const transaction = await transactionModel.findOne({ uniqueId: document.uniqueId });
         
     if (!transaction) {
@@ -107,6 +109,16 @@ router.post('/claim/:id', async (req, res) => {
     
     transaction.status = "ready to claim";
     await transaction.save();
+
+    //Update appointment status
+    const appointmentStatus = await appointmentModel.findOne({ _id: document.uniqueId  });
+
+    if(!appointmentStatus){
+        return res.status(404).json({ error: 'Appontment status nnot found' })
+    }
+
+    appointmentStatus.status = 'ready to claim';
+    await appointmentStatus.save();
 
     res.status(201).json({ newDocument, updatedDocument: document });
 

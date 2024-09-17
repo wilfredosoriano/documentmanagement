@@ -110,12 +110,14 @@ router.get('/:id', async (req, res) => {
 router.put('/claimed/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId, document, claimedDate, uniqueId } = req.body;
+        const { userId, document, uniqueId } = req.body;
+
+        const DateToday = new Date();
         
         // Update claimable document
         const claimableDocument = await claimableDocumentModel.findByIdAndUpdate(
             id,
-            { status: 'claimed', claimedDate: claimedDate },
+            { status: 'claimed', claimedDate: DateToday },
             { new: true }
         );
 
@@ -124,6 +126,7 @@ router.put('/claimed/:id', async (req, res) => {
 
         if (documentStatus) {
             documentStatus.status = 'claimed';
+            documentStatus.claimedDate = DateToday;
             await documentStatus.save();
         }
 
@@ -131,12 +134,13 @@ router.put('/claimed/:id', async (req, res) => {
         const appointmentUserId = await appointmentModel.findOne({ userId: userId, document: document });
 
         if (!appointmentUserId) {
-            return res.status(404).json({ error: 'Appointment not found' });
+            return res.status(404).json({ error: 'Appointment userId not found' });
         }
 
         appointmentUserId.userId = null;
         await appointmentUserId.save();
 
+        //Update transaction status
         const transaction = await transactionModel.findOne({ uniqueId: documentStatus.uniqueId });
         
         if (!transaction) {
@@ -144,11 +148,19 @@ router.put('/claimed/:id', async (req, res) => {
         }
         
         transaction.status = "claimed";
+        transaction.claimedDate = DateToday;
         await transaction.save();
 
-        if (!document) {
-            return res.status(404).json({ error: 'Document not found' });
+        //Update appointment status
+        const appointmentStatus = await appointmentModel.findOne({ _id: documentStatus.uniqueId  });
+
+        if(!appointmentStatus){
+            return res.status(404).json({ error: 'Appontment status nnot found' })
         }
+
+        appointmentStatus.status = 'claimed';
+        appointmentStatus.claimedDate = DateToday;
+        await appointmentStatus.save();
 
         res.status(201).json({ updatedDocument: claimableDocument});
 
