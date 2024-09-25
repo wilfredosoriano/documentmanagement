@@ -74,13 +74,15 @@ const ClaimableDocuments = () => {
     };
 
   return (
-    <div className='flex-1'>
+    <div className='flex flex-col max-h-screen'>
         <PageHeader/>
+        <div className='mt-20 p-5'>
         <DataTableClaimableDocuments data={data} handleClaimConfirm={handleClaimConfirm}/>
         <div className='hidden'>
             <div ref={invoiceRef}>
                 <MobileRequestTicket randomNumber={randomNumber} />
             </div>
+        </div>
         </div>
     </div>
   )

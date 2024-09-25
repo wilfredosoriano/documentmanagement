@@ -4,30 +4,50 @@ import { LuGraduationCap } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import MobileDetect from 'mobile-detect';
+import { jwtDecode } from 'jwt-decode';
 import { useUser } from '@/components/Contexts/UserProvider';
+
+const getDeviceType = () => {
+  const md = new MobileDetect(window.navigator.userAgent);
+
+  if(md.mobile()) return 'Mobile';
+  return 'Desktop';
+};
 
 const Login = () => {
 
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const deviceType = getDeviceType();
     const { login } = useUser();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-          const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
+          const response = await axios.post('http://localhost:5000/api/users/login', { email, password }, { withCredentials: true });
           if (response.data.message === 'Change Password Required') {
             navigate('/changePassword', { state: { userId: response.data.userId } });
           } else {
-            const { token, role, userId } = response.data;
-            const userData = { email, role, userId };
-            login(userData);
-            localStorage.setItem('token', token);
 
-            if (role === 'admin') {
+            const { accessToken  } = response.data;
+            const decodedToken = jwtDecode(accessToken);
+            const userData = { role: decodedToken.role, userId: decodedToken.userId, username: decodedToken.username };
+            login(userData);
+
+            sessionStorage.setItem('accessToken', accessToken);
+            axios.defaults.headers.common['Authorization'] = accessToken;
+
+            //insert the device type and count
+            const currentDate = new Date();
+            const userId = decodedToken.userId;
+            await axios.post('http://localhost:5000/api/users/deviceCounts', { deviceType, userId, currentDate });
+
+            //redirect user or admin to their own components
+            if (decodedToken.role === 'admin') {
                 navigate('/dashboard');
-            } else if (role === 'student') {
+            } else if (decodedToken.role === 'student') {
                 navigate('/mobileDocuments');
             } else { 
                 alert("Please use a registered account.");
@@ -37,7 +57,7 @@ const Login = () => {
           if (error.response && error.response.status === 401) {
             alert('Invalid credentials');
           } else {
-            alert('An error occurred');
+            console.error('Error logging in: ', error);
           }
         }
     };

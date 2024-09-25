@@ -32,9 +32,9 @@ function AppContent() {
   
 
   return (
-    <div className='min-h-screen flex bg-background text-primary'>
+    <div className='h-screen flex bg-background text-primary'>
       {!hideSidebar && <Sidebar />}
-      <div className={`${hideSidebar ? 'flex-1 bg-slate-50' : 'flex w-full my-6 mr-6 shadow-lg bg-background border border-border p-5 rounded-2xl'}`}>
+      <div className={`${hideSidebar ? 'flex-1 bg-slate-50 overflow-auto' : 'flex-1 overflow-auto bg-background border border-border'}`}>
         <Routes>
         <Route path='/' element={<Navigate to='/login'/>} />
           <Route path='/login' element={<Login />} />

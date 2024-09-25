@@ -2,8 +2,10 @@ const express = require('express');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const secretKey = 'wilfredo1229';
+require('dotenv').config();
+const secretKey = process.env.JWT_SECRET;
 const multer = require('multer');
+const authenticateJWT = require('../middlewares/middleware');
 
 const router = express.Router();
 
@@ -32,8 +34,34 @@ router.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
       } else {
 
-        const token = jwt.sign({ userId: user._id, role: user.role }, secretKey, { expiresIn: '1h' });
-        return res.status(200).json({ token, role: user.role, userId: user._id });
+        const accessToken = jwt.sign(
+          {
+            userId: user._id,
+            role: user.role,
+            username: user.firstname,
+          },
+          secretKey,
+          { expiresIn: '1h' }
+        );
+
+        const refreshToken = jwt.sign(
+          {
+            userId: user._id,
+            role: user.role,
+            username: user.firstname,
+          },
+          secretKey,
+          { expiresIn: '7d' }
+        );
+
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          sameSite: 'Strict',
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+
+        return res.status(200).json({ message: 'User logged in successfully', accessToken });
       }
     });
 
@@ -42,7 +70,6 @@ router.post('/login', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 router.post('/changePassword', async (req, res) => {
   const { userId, newPassword } = req.body;
@@ -77,7 +104,7 @@ router.post('/changePassword', async (req, res) => {
   }
 });
 
-router.put('/updatePassword', async (req, res) => {
+router.put('/updatePassword', authenticateJWT, async (req, res) => {
   try {
     const { userId, currentPassword, newPassword } = req.body;
 
@@ -132,6 +159,126 @@ router.put('/updateProfile', upload.single('profile'), async (req, res) => {
   }
 });
 
+router.post('/refreshToken', (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(403).json({ message: 'Access denied. No refresh token provided.' });
+  }
+
+  jwt.verify(refreshToken, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid refresh token' });
+    }
+
+    const newAccessToken = jwt.sign(
+      {
+        userId: decoded.userId,
+        role: decoded.role,
+        username: decoded.username,
+      },
+      secretKey,
+      { expiresIn: '1h' }
+    );
+
+    return res.status(200).json({ accessToken: newAccessToken });
+  });
+});
+
+
+router.post('/deviceCounts', async (req, res) => {
+  try {
+    const { deviceType, userId, currentDate } = req.body;
+    const date = currentDate ? new Date(currentDate) : new Date();
+
+    const currentMonthIndex = date.getMonth();
+    const currentYear = date.getFullYear();
+
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const currentMonth = months[currentMonthIndex]; 
+
+    const user = await userModel.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const monthlyEntry = user.monthlyDeviceCounts.find(entry => 
+      entry.month === currentMonth && entry.year === currentYear
+    );
+
+    if (monthlyEntry) {
+      await userModel.updateOne(
+        { _id: userId, 'monthlyDeviceCounts.month': currentMonth, 'monthlyDeviceCounts.year': currentYear },
+        {
+          $inc: { 
+            'monthlyDeviceCounts.$[elem].Mobile': deviceType === 'Mobile' ? 1 : 0,
+            'monthlyDeviceCounts.$[elem].Desktop': deviceType === 'Desktop' ? 1 : 0
+          }
+        },
+        {
+          arrayFilters: [{ 'elem.month': currentMonth, 'elem.year': currentYear }]
+        }
+      );
+    } else {
+      await userModel.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            monthlyDeviceCounts: {
+              month: currentMonth,
+              year: currentYear,
+              Mobile: deviceType === 'Mobile' ? 1 : 0,
+              Desktop: deviceType === 'Desktop' ? 1 : 0,
+            }
+          }
+        }
+      );
+    }
+
+    res.status(200).json({ message: 'Device count updated.' });
+  } catch (error) {
+    console.error('Error saving device counts: ', error);
+    res.status(500).json({ error: 'Error updating device counts' });
+  }
+});
+
+router.get('/getDeviceCounts', async (req, res) => {
+  try {
+    const counts = await userModel.aggregate([
+      { $unwind: "$monthlyDeviceCounts" }, 
+      {
+        $group: {
+          _id: {
+            month: "$monthlyDeviceCounts.month",
+            year: "$monthlyDeviceCounts.year"
+          },
+          Mobile: { $sum: "$monthlyDeviceCounts.Mobile" },
+          Desktop: { $sum: "$monthlyDeviceCounts.Desktop" }
+        }
+      },
+      {
+        $project: {
+          month: "$_id.month",
+          year: "$_id.year",
+          Mobile: 1,
+          Desktop: 1
+        }
+      },
+      { $sort: { year: 1, month: 1 } }
+    ]);
+
+    res.status(200).json(counts);
+  } catch (error) {
+    console.error('Error fetching device counts: ', error);
+    res.status(500).json({ error: 'Error fetching device counts' });
+  }
+});
+
 router.get('/info/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -142,7 +289,12 @@ router.get('/info/:id', async (req, res) => {
     console.error('Failed fetching user: ', error)
     res.status(500).json({ error: 'Failed to fetch user' });
   }
-})
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  return res.status(200).json({ message: 'User logged out successfully' });
+});
 
 router.post('/', (req, res) => {
     const { firstname, middlename, lastname, email, address, password, role } = req.body;
@@ -154,7 +306,7 @@ router.post('/', (req, res) => {
       console.error('Error creating user:', err);
       res.status(500).json({ error: 'Failed to add user' });
     });
-})
+});
 
 router.get('/', (req, res) => {
     userModel.find()

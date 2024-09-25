@@ -11,31 +11,14 @@ const userSchema = new mongoose.Schema({
     hasChangedPassword: { type: Boolean, default: false },
     profile: String,
     role: { type: String, required: true },
+    monthlyDeviceCounts: [{
+        month: { type: String },
+        year: { type: Number },
+        Mobile: { type: Number, default: 0 },
+        Desktop: { type: Number, default: 0 }
+    }],
     date: { type: Date, default: Date.now, required: true },
 });
-
-// userSchema.pre('save', function(next) {
-//     const user = this;
-
-//     if (!user.isModified('password')) {
-//         return next();
-//     }
-
-//     bcrypt.genSalt(10, function(err, salt) {
-//         if (err) {
-//             return next(err);
-//         }
-
-//         bcrypt.hash(user.password, salt, function(err, hash) {
-//             if (err) {
-//                 return next(err);
-//             }
-
-//             user.password = hash;
-//             next();
-//         });
-//     });
-// });
 
 const userModel = mongoose.model('Users', userSchema);
 module.exports = userModel;

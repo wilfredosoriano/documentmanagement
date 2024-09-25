@@ -4,19 +4,21 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import SettingSidebar from './Settings/SettingSidebar';
-import crush from '../assets/images/crush.jpg'
 import { EditIcon } from 'lucide-react';
 import { useUser } from './Contexts/UserProvider';
 import axios from 'axios';
 import { useToast } from './ui/use-toast';
 import ImageFormat from '@/mobile/mobileComponents/ImageFormat';
 import { LuCheckCircle } from 'react-icons/lu';
+import crush from '../assets/images/crush.jpg'
+import axiosInstance from './Interceptors/axiosInstance';
 
 export default function Profile() {
 
     const { user } = useUser();
     const userId = user?.userId;
     const { toast } = useToast();
+    const accessToken = sessionStorage.getItem('accessToken');
 
     const [activeSection, setActiveSection] = useState('profile');
     const [firstname, setFirstname] = useState('');
@@ -30,12 +32,18 @@ export default function Profile() {
 
     useEffect(() => {
         if(userId){
+            const cachedProfile = localStorage.getItem('profileImage');
+            if (cachedProfile) {
+                setProfile(cachedProfile);
+            }    
+
             axios.get(`http://localhost:5000/api/users/info/${userId}`)
             .then(response => {
-            const { firstname, email, profile } = response.data;
-            setFirstname(firstname || '');
-            setEmail(email || '');
-            setProfile(profile);
+                const { firstname, email, profile } = response.data;
+                setFirstname(firstname || '');
+                setEmail(email || '');
+                setProfile(profile || cachedProfile);
+                localStorage.setItem('profileImage', profile);
             })
             .catch(error => {
             console.error('Error fetching user data:', error);
@@ -52,7 +60,6 @@ export default function Profile() {
                 description: 'Please fill the password to continue',
             });
             return;
-            return;
         }
 
         if(newPassword !== confirmNewPassword){
@@ -67,7 +74,7 @@ export default function Profile() {
         setIsLoading(true);
 
         setTimeout(() => {
-            axios.put('http://localhost:5000/api/users/updatePassword', { userId, currentPassword, newPassword })
+            axiosInstance.put('/users/updatePassword', { userId, currentPassword, newPassword })
             .then(() => {
                 toast({ 
                     description: 'Password has been updated.',
@@ -77,7 +84,7 @@ export default function Profile() {
                 });
                 setCurrentPassword('');
                 setNewPassword('');
-                setCurrentPassword('');
+                setConfirmNewPassword('');
                 setIsLoading(false);
             })
             .catch(error => {
@@ -86,8 +93,9 @@ export default function Profile() {
                         variant: 'destructive',
                         description: 'Please input your correct current password',
                     });
+                } else { 
+                    console.error('Error updating password: ', error);
                 }
-                console.error('Error updating password: ', error);
                 setIsLoading(false);
             });
         }, 3000);
@@ -123,7 +131,10 @@ export default function Profile() {
                 const { user } = response.data; 
 
                 setProfile(user.profile); 
-                setFirstname(user.firstname); 
+                setFirstname(user.firstname);
+                
+                localStorage.setItem('profileImage', user.profile);
+
                 toast({
                     description: 'Profile has been updated.',
                     action: (
@@ -141,16 +152,22 @@ export default function Profile() {
 
   return (
     <div className='flex max-md:flex-col'>
-        <SettingSidebar activeSection={activeSection} onSectionClick={setActiveSection} />
+            <SettingSidebar activeSection={activeSection} onSectionClick={setActiveSection} />
         <div className='flex-1 p-5'>
         {activeSection === 'profile' && (
              <form onSubmit={handleUpdate}>
                 <div className='flex flex-row gap-6 max-sm:flex-col'>
                     <div className='flex flex-col items-center gap-3'>
-                        {profilePreview ? (
-                            <img src={profilePreview} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                        {!profile ? (
+                            <img src={crush} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
                         ) : (
-                            <ImageFormat src={profile} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                            <>
+                            {profilePreview ? (
+                                <img src={profilePreview} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                            ) : (
+                                <ImageFormat src={profile} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                            )}
+                            </>
                         )}
                         <input type='file' id='fileInput' accept='image/*' className='hidden' onChange={handleProfileOnchange}/>
                         <EditIcon 

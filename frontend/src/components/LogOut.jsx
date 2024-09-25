@@ -12,6 +12,7 @@ import {
   } from "@/components/ui/alert-dialog"
 import { useUser } from './Contexts/UserProvider';
 import { useNavigate } from 'react-router-dom';
+import { AiOutlineLogin, AiOutlineLogout } from "react-icons/ai"
 
 const LogOut = () => {
   const { user, logout } = useUser();
@@ -21,16 +22,21 @@ const LogOut = () => {
     navigate('/login'); 
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <AlertDialog>
-        <AlertDialogTrigger>
+        <AlertDialogTrigger className='w-full'>
           {user ? (
-          <div className='max-sm:mr-0 border px-3 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary'
-          >Sign out</div>
+          <div className='max-sm:mr-0 border px-3 py-2 flex justify-center items-center gap-2 rounded-md cursor-pointer text-sm whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary'
+          >Sign out <AiOutlineLogout size={18}/></div>
           ) : (
-            <div className='max-sm:mr-0 border px-3 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap hover:bg-primary hover:text-primary-foreground'
+            <div className='max-sm:mr-0 border px-3 py-2 flex justify-center items-center gap-2 rounded-md cursor-pointer text-sm whitespace-nowrap hover:bg-primary hover:text-primary-foreground'
               onClick={navigateToLogin}
-            >Sign in</div>
+            >Sign in <AiOutlineLogin size={18}/></div>
           )}
         </AlertDialogTrigger>
         <AlertDialogContent className="w-10/12">
@@ -42,7 +48,7 @@ const LogOut = () => {
             </AlertDialogHeader>
             <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={logout}>Continue</AlertDialogAction>
+            <AlertDialogAction onClick={handleLogout}>Continue</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>

@@ -92,8 +92,9 @@ const fetchDocumentCounts = () => {
   };
 
   return (
-    <div className='flex-1'>
+    <div className='flex flex-col max-h-screen'>
       <PageHeader />
+      <div className='mt-20 p-5'>
       <DialogBoxAddDocument onClick={handleAddDocument}/>
       <DataTableDocument 
         data={data} 
@@ -102,6 +103,7 @@ const fetchDocumentCounts = () => {
         handleViewDocuments={handleViewDocuments}
         handleOnClikEdit={handleEditDocuments}
       />
+      </div>
     </div>
   )
 };

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react'
+import axios from 'axios';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const UserContext = createContext();
 
@@ -11,20 +12,25 @@ export const UserProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-  }
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+    sessionStorage.setItem('user', JSON.stringify(userData));
+  };
+  
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/users/logout');
+      setUser(null); 
+      sessionStorage.removeItem('user');
+    } catch (error) {
+        console.error('Error logging out:', error);
+    }
   };
 
-  React.useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem('user');
+    if(storedUser){
       setUser(JSON.parse(storedUser));
     }
-  }, []);
+  },[])
 
   return (
     <UserContext.Provider value={{ user, login, logout }}>

@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 import ImageFormat from './ImageFormat';
 import axios from 'axios';
 import LogOut from '@/components/LogOut';
+import { useUser } from '@/components/Contexts/UserProvider';
+import ReserveDialog from './Dialogs/ReserveDialog';
 
 export default function Header({ toggleMenu, setFilteredDocuments }) {
   const location = useLocation();
@@ -12,6 +14,10 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [query, setQuery] = useState('');
   const [documents, setDocuments] = useState([]);
+  const [documentDetails, setDocumentDetails] = useState('');
+  const [isDialogReserve, setIsDialogReserve] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,7 +60,19 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
   };
 
   const handleReserve = (id) => {
-    console.log(id);
+    if(!user){
+      navigate('/login');
+      return;
+    }
+
+    axios.get(`http://localhost:5000/api/titles/${id}`)
+    .then(response => {
+      setDocumentDetails(response.data);
+      setIsDialogReserve(true);
+      setIsDropdownOpen(false);
+    }).catch(error => {
+      console.error('Error fetching documents details', error);
+    })
   };
   
   const includeSearchbar = '/mobileDocuments';
@@ -144,16 +162,25 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
       )}
 
       {!showSearch && (
-      <div className='flex flex-row items-center ml-20 max-md:ml-10 justify-between gap-10'>
-        {includeSearchbar === location.pathname && <LuSearch size={20} className='mr-5 sm:hidden cursor-pointer' onClick={() => setShowSearch(true)}/> } 
+      <div className='flex flex-row items-center ml-20 max-md:ml-10 justify-between'>
+        {includeSearchbar === location.pathname && <LuSearch size={30} className='mr-5 sm:hidden cursor-pointer' onClick={() => setShowSearch(true)}/> } 
 
         <LogOut />
  
-        <button onClick={toggleMenu} className='cursor-pointer hover:bg-slate-100 p-2 mr-4 rounded-full max-sm:hidden'>
+        <button onClick={toggleMenu} className='cursor-pointer hover:bg-slate-100 p-2 mr-4 ml-10 rounded-full max-sm:hidden'>
           <LuMenu size={20} />
         </button>
       </div>
-      )}  
+      )} 
+
+        <ReserveDialog
+          isDialogReserve={isDialogReserve}
+          setIsDialogReserve={setIsDialogReserve}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          documentDetails={documentDetails}
+          user={user}
+        /> 
     </div>
   );
 }

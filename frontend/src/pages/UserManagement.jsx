@@ -83,8 +83,9 @@ const UserManagement = () => {
   };  
 
   return (
-    <div className='flex-1'>
+    <div className='flex flex-col max-h-screen'>
           <PageHeader/>
+          <div className='mt-20 p-5'>
           <DialogBoxAddUser onClick={handleAddUser}/>
           <DataTableUser 
           data={data} 
@@ -92,6 +93,7 @@ const UserManagement = () => {
           handleDeleteAll={handleDeleteAll}
           handleOnClickEdit={handleEditUsers}
           />
+          </div>
     </div>
   )
 };

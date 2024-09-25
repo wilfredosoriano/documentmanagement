@@ -67,8 +67,9 @@ const ViewDocuments = () => {
     };
     
   return (
-    <div className='flex-1'>
+    <div className='flex flex-col min-h-screen'>
         <PageHeader />
+        <div className='mt-20 p-5'>
         <div className='text-xl font-bold'>{document}</div>
         <DataTableViewDocument
             data={data}
@@ -76,6 +77,7 @@ const ViewDocuments = () => {
             handleDeleteAll={handleDeleteAll}
             handleClaimConfirm={handleClaimConfirm}
         />
+        </div>
     </div>
   )
 }
