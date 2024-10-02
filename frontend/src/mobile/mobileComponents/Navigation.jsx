@@ -65,7 +65,7 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
     }, [menuOpen]);
 
   return (
-    <ul className={`bg-background h-full fixed transition-transform sm:top-0 sm:mt-[64px] sm:right-0 max-sm:bottom-0 max-sm:h-auto max-sm:w-full max-sm:flex max-sm:flex-row max-sm:justify-between z-50 ${menuOpen ? 'w-[240px]' : 'w-[96px]'}`}>
+    <ul className={`bg-background border-l h-full fixed transition-transform sm:top-0 sm:mt-[64px] sm:right-0 max-sm:bottom-0 max-sm:h-auto max-sm:w-full max-sm:flex max-sm:flex-row max-sm:justify-between z-50 ${menuOpen ? 'w-[240px]' : 'w-[96px]'}`}>
         <li className={`p-3 w-full ${isActive('/mobileDocuments') ? 'bg-slate-300' : 'hover:bg-slate-200' } flex items-center cursor-pointer ${menuOpen ? 'flex-row gap-5 pl-6 text-sm ' : 'flex-col gap-2 text-xs'}`}
             onClick={goToDocuments}
         >

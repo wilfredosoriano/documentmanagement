@@ -15,9 +15,11 @@ import MobileTransactions from './mobile/MobileTransactions';
 import { UserProvider } from './components/Contexts/UserProvider';
 import MobileRequestTicket from './mobile/MobileRequestTicket';
 import MobileProfile from './mobile/MobileProfile';
+import { useUser } from './components/Contexts/UserProvider';
 
 function AppContent() {
   const location = useLocation();
+  const { user } = useUser();
   
   const hiddenPaths = [
     '/login', 
@@ -30,11 +32,14 @@ function AppContent() {
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
   
+  if (!user && location.pathname !== '/login') {
+    return <Navigate to='/login' />;
+  }
 
   return (
     <div className='h-screen flex bg-background text-primary'>
       {!hideSidebar && <Sidebar />}
-      <div className={`${hideSidebar ? 'flex-1 bg-slate-50 overflow-auto' : 'flex-1 overflow-auto bg-background border border-border'}`}>
+      <div className={`${hideSidebar ? 'flex-1 overflow-auto' : 'flex-1 overflow-auto bg-background border border-border'}`}>
         <Routes>
         <Route path='/' element={<Navigate to='/login'/>} />
           <Route path='/login' element={<Login />} />

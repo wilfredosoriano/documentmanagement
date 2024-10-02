@@ -33,7 +33,7 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
 
   useEffect(() => {
     const fetchDocuments = () => {
-      axios.get('http://localhost:5000/api/titles/document-counts')
+      axios.get(`${import.meta.env.VITE_API_URL}/titles/document-counts`)
       .then(response => {
         setDocuments(response.data);
         if (setFilteredDocuments) {
