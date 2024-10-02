@@ -13,7 +13,7 @@ const ClaimableDocuments = () => {
     const invoiceRef = useRef(null);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/claimableDocuments')
+        axios.get(`${import.meta.env.VITE_API_URL}/claimableDocuments`)
         .then(response => {
           setData(response.data);
         }).catch(error => {
@@ -22,7 +22,7 @@ const ClaimableDocuments = () => {
     },[])
 
     const handleClaimConfirm = (id, userId, documentTitle, trackingId) => {
-      axios.put(`http://localhost:5000/api/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, uniqueId: trackingId })
+      axios.put(`${import.meta.env.VITE_API_URL}/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, uniqueId: trackingId })
       .then(response => {
         const { updatedDocument } = response.data;
 
@@ -57,7 +57,7 @@ const ClaimableDocuments = () => {
       formData.append('file', pdfBlob, `invoice_${randomNumber}.pdf`);
 
       try {
-        const response = await axios.post('http://localhost:5000/api/claimableDocuments/uploadPdf', formData, {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}claimableDocuments/uploadPdf`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -74,7 +74,7 @@ const ClaimableDocuments = () => {
     };
 
     const handleDelete = (id) => {
-      axios.delete(`http://localhost:5000/api/claimableDocuments/${id}`)
+      axios.delete(`${import.meta.env.VITE_API_URL}/claimableDocuments/${id}`)
         .then(() => {
           setData(prevData => prevData.filter(doc => doc._id !== id));
           toast({
@@ -88,7 +88,7 @@ const ClaimableDocuments = () => {
     };
   
     const handleDeleteAll = () => {
-      axios.delete('http://localhost:5000/api/claimableDocuments')
+      axios.delete(`${import.meta.env.VITE_API_URL}/claimableDocuments`)
         .then(() => {
           setData([]);
           toast({

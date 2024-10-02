@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import { LuFolder, LuFolderCog, LuFolderSync } from 'react-icons/lu'; 
 import { AiFillFolderOpen, AiOutlineFolderOpen } from "react-icons/ai";
-import { RiFolderSettingsFill, RiFolderSettingsLine, RiFolderSharedFill, RiFolderSharedLine, RiUser3Fill, RiUser3Line } from "react-icons/ri";
+import { RiFolderSharedFill, RiFolderSharedLine, RiUser3Fill, RiUser3Line } from "react-icons/ri";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '@/components/Contexts/UserProvider';
 import { useToast } from '@/components/ui/use-toast';

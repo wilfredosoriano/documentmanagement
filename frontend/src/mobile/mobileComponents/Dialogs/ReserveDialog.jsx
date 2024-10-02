@@ -33,7 +33,7 @@ export default function ReserveDialog({ isDialogReserve, setIsDialogReserve, isL
 
     const handleConfirmReserve = (id, documentTitle) => {
         setIsLoading(true);
-        axios.post(`http://localhost:5000/api/appointments/reserve/${id}`, { userId: user.userId, document: documentTitle })
+        axios.post(`${import.meta.env.VITE_API_URL}/appointments/reserve/${id}`, { userId: user.userId, document: documentTitle })
         .then(() => {
           setTimeout(() => {
             setIsDialogReserve(false);

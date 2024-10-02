@@ -317,7 +317,7 @@ router.get('/', (req, res) => {
         res.json(users);
     })
     .catch(err => {
-        console.err('Error fetching users:', err);
+        console.error('Error fetching users:', err);
         res.status(500).json({ error: 'Failed to fetch users' });
     })
 })

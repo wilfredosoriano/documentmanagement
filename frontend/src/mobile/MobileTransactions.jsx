@@ -22,7 +22,7 @@ const MobileTransactions = () => {
 
   useEffect(() => {
     if(userId){
-      axios.get(`http://localhost:5000/api/transactions/history/${userId}`)
+      axios.get(`${import.meta.env.VITE_API_URL}/transactions/history/${userId}`)
       .then(response => {
         setData(response.data);
       })

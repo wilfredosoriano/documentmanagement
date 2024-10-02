@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
   
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/users/logout');
+      await axios.post(`${import.meta.env.VITE_API_URL}/users/logout`);
       setUser(null); 
       sessionStorage.removeItem('user');
     } catch (error) {

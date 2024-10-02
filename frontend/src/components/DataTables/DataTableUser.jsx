@@ -45,7 +45,7 @@ const DataTableUser = ({ data, handleDelete, handleDeleteAll, handleOnClickEdit 
 
     const handleViewUser = (id) => {
       axios
-        .get(`http://localhost:5000/api/users/info/${id}`)
+        .get(`${import.meta.env.VITE_API_URL}/users/info/${id}`)
         .then((response) => {
           const data = response.data;
           setUser(data);

@@ -91,7 +91,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
 
   const handleViewDocument = (id) => {
     axios
-      .get(`http://localhost:5000/api/documents/${id}`)
+      .get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
       .then((response) => {
         const data = response.data;
         setDocument(data);
@@ -119,7 +119,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   };
 
   const handleReadyToClaim = (id) => {
-    axios.get(`http://localhost:5000/api/documents/${id}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
     .then((response) => {
       const data = response.data;
       setIsDialogClaim(true);
@@ -160,7 +160,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   const handleViewStatus = (id) => {
     setTrackingId(id);
     setIsDialogStatus(true);
-    axios.get(`http://localhost:5000/api/documents/${id}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
       .then(response => {
         const status = response.data.status;
         const claimedDate = response.data.claimedDate;

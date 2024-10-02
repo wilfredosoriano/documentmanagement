@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTableUser from '@/components/DataTables/DataTableUser';
 import DialogBoxAddUser from '@/components/DialogBoxes/UserDialogs/DialogBoxAddUser';
 import PageHeader from '@/components/PageHeader';
@@ -11,16 +11,16 @@ const UserManagement = () => {
 
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/users')
+    axios.get(`${import.meta.env.VITE_API_URL}/users`)
     .then(response => {
       setData(response.data);
     }).catch(error => {
       console.error('Error fetching users: ', error);
     });
-  },[])
+  },[]) 
 
   const handleAddUser = (userData) => {
-    axios.post('http://localhost:5000/api/users', userData)
+    axios.post(`${import.meta.env.VITE_API_URL}/users`, userData)
       .then(response => {
         const newUser = response.data;
         setData(prevData => [...prevData, newUser]);
@@ -37,7 +37,7 @@ const UserManagement = () => {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/users/${id}`)
+    axios.delete(`${import.meta.env.VITE_API_URL}/users/${id}`)
       .then(() => {
         setData(prevData => prevData.filter(user => user._id !== id));
         toast({
@@ -51,7 +51,7 @@ const UserManagement = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete('http://localhost:5000/api/documents')
+    axios.delete(`${import.meta.env.VITE_API_URL}/documents`)
       .then(() => {
         setData([]);
         toast({
@@ -65,7 +65,7 @@ const UserManagement = () => {
   };
 
   const handleEditUsers = (userData) => {
-    axios.put(`http://localhost:5000/api/users/${userData.id}`, userData)
+    axios.put(`${import.meta.env.VITE_API_URL}/users/${userData.id}`, userData)
       .then(response => {
         const updatedUser = response.data;
         console.log(updatedUser);

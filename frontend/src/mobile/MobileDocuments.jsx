@@ -31,7 +31,7 @@ const MobileDocuments = () => {
       return;
     }
 
-    axios.get(`http://localhost:5000/api/titles/${id}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/titles/${id}`)
     .then(response => {
       setDocumentDetails(response.data);
       setIsDialogReserve(true);

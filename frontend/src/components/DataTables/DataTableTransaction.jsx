@@ -43,7 +43,7 @@ const DataTableTransaction = ({ data }) => {
     const handleViewStatus = (id) => {
         setTrackingId(id);
         setIsDialogStatus(true);
-        axios.get(`http://localhost:5000/api/transactions/status/${id}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/transactions/status/${id}`)
         .then(response => {
           const status = response.data.status;
           const claimedDate = response.data.claimedDate;

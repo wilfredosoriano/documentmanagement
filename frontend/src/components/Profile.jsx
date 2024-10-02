@@ -10,7 +10,6 @@ import axios from 'axios';
 import { useToast } from './ui/use-toast';
 import ImageFormat from '@/mobile/mobileComponents/ImageFormat';
 import { LuCheckCircle } from 'react-icons/lu';
-import crush from '../assets/images/crush.jpg'
 import axiosInstance from './Interceptors/axiosInstance';
 
 export default function Profile() {
@@ -33,7 +32,7 @@ export default function Profile() {
     useEffect(() => {
         if(userId){
 
-            axios.get(`http://localhost:5000/api/users/info/${userId}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/users/info/${userId}`)
             .then(response => {
                 const { firstname, email, profile } = response.data;
                 setFirstname(firstname || '');
@@ -136,7 +135,7 @@ export default function Profile() {
         setIsLoading(true);
 
         setTimeout(() => {
-            axios.put('http://localhost:5000/api/users/updateProfile', formData)
+            axios.put(`${import.meta.env.VITE_API_URL}/users/updateProfile`, formData)
             .then(response => {
                 const { user } = response.data; 
 

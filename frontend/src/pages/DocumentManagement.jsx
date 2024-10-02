@@ -17,14 +17,14 @@ useEffect(() => {
 }, []);
 
 const fetchDocumentCounts = () => {
-  fetch('http://localhost:5000/api/titles/document-counts')
+  fetch(`${import.meta.env.VITE_API_URL}/titles/document-counts`)
   .then(response => response.json())
   .then(data => setData(data))
   .catch(error => console.error('Error fetching document counts:', error));
 }
 
   const handleAddDocument = (documentData) => {
-    axios.post('http://localhost:5000/api/titles', documentData)
+    axios.post(`${import.meta.env.VITE_API_URL}/titles`, documentData)
       .then(response => {
         const newDocument = response.data;
         setData(prevData => [...prevData, newDocument]);
@@ -41,7 +41,7 @@ const fetchDocumentCounts = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete('http://localhost:5000/api/titles')
+    axios.delete(`${import.meta.env.VITE_API_URL}/titles`)
       .then(() => {
         setData([]);
         toast({
@@ -55,7 +55,7 @@ const fetchDocumentCounts = () => {
   };
 
   const handleEditDocuments = (documentData) => {
-    axios.put(`http://localhost:5000/api/titles/${documentData.id}`, documentData)
+    axios.put(`${import.meta.env.VITE_API_URL}/titles/${documentData.id}`, documentData)
       .then(response => {
         const updatedDocument = response.data;
         setData(prevData => prevData.map(doc => (doc._id === updatedDocument._id ? updatedDocument : doc)));

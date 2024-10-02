@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import crush from '../assets/images/wilfredo.jpg'
 import Notification from './Notification';
 import { useUser } from './Contexts/UserProvider';
 import ImageFormat from '@/mobile/mobileComponents/ImageFormat';

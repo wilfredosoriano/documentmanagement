@@ -48,7 +48,7 @@ export default function DashboardChart() {
     useEffect(() => {
         const fetchDeviceCounts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/users/getDeviceCounts');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/getDeviceCounts`);
                 const counts = response.data; 
         
                 const updatedChartData = getLastSixMonths().map(monthEntry => {

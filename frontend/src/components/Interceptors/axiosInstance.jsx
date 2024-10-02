@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL,
 });
 
 axiosInstance.interceptors.response.use(
@@ -14,7 +14,7 @@ axiosInstance.interceptors.response.use(
 
             try {
                 
-                const refresResponse = await axios.post('http://localhost:5000/api/users/refreshToken', {}, { withCredentials: true });
+                const refresResponse = await axios.post(`${import.meta.env.VITE_API_URL}/users/refreshToken`, {}, { withCredentials: true });
                 const newAccessToken = refresResponse.data.accessToken;
 
                 sessionStorage.setItem('accessToken', newAccessToken);

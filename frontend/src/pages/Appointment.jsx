@@ -12,7 +12,7 @@ const Appointment = () => {
   const [data, setData] = useState([]);   
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/appointments')
+    axios.get(`${import.meta.env.VITE_API_URL}/appointments`)
     .then(response => {
       setData(response.data);
     }).catch(error => {
@@ -21,7 +21,7 @@ const Appointment = () => {
   },[])
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/appointments/${id}`)
+    axios.delete(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
       .then(() => {
         setData(prevData => prevData.filter(doc => doc._id !== id));
         toast({
@@ -35,7 +35,7 @@ const Appointment = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete('http://localhost:5000/api/appointments')
+    axios.delete(`${import.meta.env.VITE_API_URL}/appointments`)
       .then(() => {
         setData([]);
         toast({
@@ -49,7 +49,7 @@ const Appointment = () => {
   };
 
   const handleApprove = (id) => {
-    axios.post(`http://localhost:5000/api/appointments/${id}`)
+    axios.post(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
     .then(response => {
       const { updatedAppointment } = response.data;
 

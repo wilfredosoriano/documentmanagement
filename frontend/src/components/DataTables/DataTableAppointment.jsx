@@ -61,7 +61,7 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
     const handleViewStatus = (id) => {
         setTrackingId(id);
         setIsDialogStatus(true);
-        axios.get(`http://localhost:5000/api/appointments/${id}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
           .then(response => {
             const status = response.data.status;
             const claimedDate = response.data.claimedDate;

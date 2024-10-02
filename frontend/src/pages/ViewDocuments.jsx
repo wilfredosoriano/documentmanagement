@@ -12,7 +12,7 @@ const ViewDocuments = () => {
 
     useEffect(() => {
         if(document){
-            axios.get(`http://localhost:5000/api/documents/title/${document}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/documents/title/${document}`)
             .then(response => {
                 setData(response.data);
             })
@@ -23,7 +23,7 @@ const ViewDocuments = () => {
     }, [])
 
     const handleDelete = (id) => {
-        axios.get(`http://localhost:5000/api/documents/${id}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
         .then(() => {
             setData(prevData => prevData.filter(doc => doc._id !== id));
             toast({
@@ -37,7 +37,7 @@ const ViewDocuments = () => {
 
 
     const handleDeleteAll = () => {
-        axios.delete('http://localhost:5000/api/documents')
+        axios.delete(`${import.meta.env.VITE_API_URL}/documents`)
           .then(() => {
             setData([]);
             toast({
@@ -51,7 +51,7 @@ const ViewDocuments = () => {
       };
 
     const handleClaimConfirm = (documentId, formattedDate) => {
-        axios.post(`http://localhost:5000/api/documents/claim/${documentId}`, { claimableDate: formattedDate })
+        axios.post(`${import.meta.env.VITE_API_URL}/documents/claim/${documentId}`, { claimableDate: formattedDate })
         .then(response => {
             const { updatedDocument } = response.data;
 
