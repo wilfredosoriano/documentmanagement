@@ -8,7 +8,7 @@ const DocumentBox = ({ document, appointments, imageUrl, handleReserve }) => {
 
   return (
     <div className='flex flex-col border shadow-md bg-background w-full'>
-        <img src={formattedImageUrl} alt={document} className='h-[240px] object-cover' />
+        <img src={formattedImageUrl} alt={document} className='h-[160px] object-cover' />
         <div className='flex flex-row items-center justify-between p-5'>
             <div className='flex flex-col items-start'>
                 <div className='font-bold text-lg'>{document}</div>

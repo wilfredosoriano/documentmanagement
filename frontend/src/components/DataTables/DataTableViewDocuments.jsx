@@ -57,6 +57,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Calendar } from '../ui/calendar';
 import CustomDialog from '../DialogBoxes/CustomDialog';
+import { formatDate } from '@/utils/dateUtils';
 
 const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClaimConfirm }) => {
   const { toast } = useToast();
@@ -75,24 +76,6 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   const [dateError, setDateError] = useState('');
   const [documentId, setDocumentId] = useState('');
   const [claimedDate, setClaimedDate] = useState('');
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-
-    const formattedDate = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }).format(date);
-
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    }).format(date);
-
-    return `${formattedDate} ${formattedTime}`;
-  };
 
   const formatCalendarDate = (dateString) => {
     const date = new Date(dateString);

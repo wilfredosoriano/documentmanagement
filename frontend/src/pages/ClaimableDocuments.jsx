@@ -73,11 +73,44 @@ const ClaimableDocuments = () => {
       }
     };
 
+    const handleDelete = (id) => {
+      axios.delete(`http://localhost:5000/api/claimableDocuments/${id}`)
+        .then(() => {
+          setData(prevData => prevData.filter(doc => doc._id !== id));
+          toast({
+            variant: "destructive",
+            description: "Document has been deleted.",
+          });
+        })
+        .catch(error => {
+          console.error('Error deleting document:', error);
+        });
+    };
+  
+    const handleDeleteAll = () => {
+      axios.delete('http://localhost:5000/api/claimableDocuments')
+        .then(() => {
+          setData([]);
+          toast({
+            variant: "destructive",
+            description: "Documents has been deleted.",
+          });
+        })
+        .catch(error => {
+          console.error('Error deleting document:', error);
+        });
+    };
+
   return (
     <div className='flex flex-col max-h-screen'>
         <PageHeader/>
         <div className='mt-20 p-5'>
-        <DataTableClaimableDocuments data={data} handleClaimConfirm={handleClaimConfirm}/>
+        <DataTableClaimableDocuments 
+          data={data} 
+          handleClaimConfirm={handleClaimConfirm}
+          handleDelete={handleDelete}
+          handleDeleteAll={handleDeleteAll}
+        />
         <div className='hidden'>
             <div ref={invoiceRef}>
                 <MobileRequestTicket randomNumber={randomNumber} />

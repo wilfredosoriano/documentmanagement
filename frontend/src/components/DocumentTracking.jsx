@@ -1,25 +1,8 @@
 import React from 'react';
 import { GrDocumentTime, GrDocumentVerified, GrDocumentTransfer, GrDocumentUser } from "react-icons/gr";
+import { formatDate } from '@/utils/dateUtils';
 
 const DocumentTracking = ({ status, claimedDate }) => {
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-
-    const formattedDate = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }).format(date);
-
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    }).format(date);
-
-    return `${formattedDate} ${formattedTime}`;
-  };
 
   return (
     <div className='flex flex-col gap-12 relative'>

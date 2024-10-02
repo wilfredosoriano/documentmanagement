@@ -170,4 +170,26 @@ router.put('/claimed/:id', async (req, res) => {
     }
 });
 
+//delete data
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await claimableDocumentModel.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Claimable document deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting claimable document: ', error);
+        res.status(500).json({ error: 'Failed to delete claimable document' });
+    }
+});
+
+router.delete('/', async (req, res) => {
+    try {
+        await claimableDocumentModel.deleteMany();
+        res.status(200).json({ message: 'Claimable documents deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting all the claimable documents: ', error);
+        res.status(500).json({ error: 'Failed to delete all the claimble documents' });
+    }
+});
+
 module.exports = router;

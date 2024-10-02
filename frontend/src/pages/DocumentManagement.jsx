@@ -40,20 +40,6 @@ const fetchDocumentCounts = () => {
       });
   };
 
-  const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/titles/${id}`)
-      .then(() => {
-        setData(prevData => prevData.filter(doc => doc._id !== id));
-        toast({
-          variant: "destructive",
-          description: "Document has been deleted.",
-        });
-      })
-      .catch(error => {
-        console.error('Error deleting document:', error);
-      });
-  };
-
   const handleDeleteAll = () => {
     axios.delete('http://localhost:5000/api/titles')
       .then(() => {
@@ -98,7 +84,6 @@ const fetchDocumentCounts = () => {
       <DialogBoxAddDocument onClick={handleAddDocument}/>
       <DataTableDocument 
         data={data} 
-        handleDelete={handleDelete} 
         handleDeleteAll={handleDeleteAll}
         handleViewDocuments={handleViewDocuments}
         handleOnClikEdit={handleEditDocuments}

@@ -29,6 +29,7 @@ import { LuMoreHorizontal } from 'react-icons/lu';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import axios from 'axios';
 import DocumentTracking from '../DocumentTracking';
+import { formatDate } from '@/utils/dateUtils';
 
 const DataTableTransaction = ({ data }) => {
 
@@ -38,24 +39,6 @@ const DataTableTransaction = ({ data }) => {
     const [currentStatus, setCurrentStatus] = useState('');
     const [trackingId, setTrackingId] = useState('');
     const [claimedDate, setClaimedDate] = useState('');
-    
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-  
-      const formattedDate = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }).format(date);
-  
-      const formattedTime = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      }).format(date);
-  
-      return `${formattedDate} ${formattedTime}`;
-    };
 
     const handleViewStatus = (id) => {
         setTrackingId(id);

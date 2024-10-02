@@ -44,6 +44,7 @@ import { Separator } from '../ui/separator';
 import CustomAlertDialog from '../DialogBoxes/CustomAlertDialog';
 import DocumentTracking from '../DocumentTracking';
 import axios from 'axios';
+import { formatDate } from '@/utils/dateUtils';
 
 const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDelete }) => {
     const [columnFilters, setColumnFilters] = useState([]);
@@ -56,24 +57,6 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
     const [isDialogStatus, setIsDialogStatus] = useState(false);
     const [currentStatus, setCurrentStatus] = useState('');
     const [claimedDate, setClaimedDate] = useState('');
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        
-        const formattedDate = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }).format(date);
-
-        const formattedTime = new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        }).format(date);
-
-        return `${formattedDate} ${formattedTime}`;
-    };
 
     const handleViewStatus = (id) => {
         setTrackingId(id);

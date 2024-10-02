@@ -25,8 +25,7 @@ const DialogBoxAddUser = ({ onClick }) => {
   const handleAddUser = (e) => {
     e.preventDefault();
 
-    let randromPassword = (Math.random() + 1).toString(36).substring(7);
-    console.log(randromPassword);
+    let randromPassword = (Math.random() + 1).toString(36).substring(6);
 
     const userData = {
       firstname: firstname,

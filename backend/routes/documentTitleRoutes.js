@@ -79,18 +79,6 @@ router.get('/:id', (req, res) => {
   });
 });
 
-
-router.get('/', (req, res) => {
-    documentTitleModel.find()
-    .then(documents => {
-        res.status(200).json(documents);
-    })
-    .catch(err => {
-        console.error('Error fetching document titles:', err);
-        res.status(500).json({ error: 'Failed to fetch document titles' });
-    })
-});
-
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,6 +100,27 @@ router.put('/:id', async (req, res) => {
     console.error('Error updating document: ', error);
     res.status(500).json({ error: 'Failed to update document.' }); // Generic error message for internal server errors
   }
+});
+
+router.delete('/', async (req, res) => {
+  try {
+    await documentTitleModel.deleteMany();
+    res.status(200).json({ message: 'Titles deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting titles: ', error);
+    res.status(500).json({ error: 'Failed to delete titles' });
+  }
+});
+
+router.get('/', (req, res) => {
+  documentTitleModel.find()
+  .then(documents => {
+      res.status(200).json(documents);
+  })
+  .catch(err => {
+      console.error('Error fetching document titles:', err);
+      res.status(500).json({ error: 'Failed to fetch document titles' });
+  })
 });
 
 module.exports = router;

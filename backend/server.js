@@ -14,7 +14,6 @@ const PORT = process.env.PORT;
 const MONGODB_URI = process.env.MONGODB_URI;
 const app = express();
 
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -26,12 +25,12 @@ mongoose.connect(MONGODB_URI)
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
 
+//routes
 app.use('/api/documents', documentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/titles', documentTitleRoutes);
-app.use('/api/appointments', appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes); 
 app.use('/api/claimableDocuments', claimableDocumentRoutes);
 app.use('/api/transactions', transactionRoutes);
-
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -35,7 +35,6 @@ import { Checkbox } from '../ui/checkbox'
 import DialogBoxEditDocument from '../DialogBoxes/DocumentDialogs/DialogBoxEditDocument';
 
 const DataTableDocument = ({ data, handleDeleteAll, handleViewDocuments, handleOnClikEdit }) => {
-    const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [filtering, setFiltering] = useState('');
     const [isAllChecked, setIsAllChecked] = useState(false);
@@ -140,7 +139,6 @@ const DataTableDocument = ({ data, handleDeleteAll, handleViewDocuments, handleO
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         state: {
-            sorting,
             columnFilters,
             globalFilter: filtering,
         }

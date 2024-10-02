@@ -14,26 +14,46 @@ const isToday = (someDate) => {
       someDate.getFullYear() === today.getFullYear();
 }
 
-router.get('/', async (req, res) => {
+router.post('/reserve/:id', async (req, res) => {
     try {
-        const { createdDate, reservedDate } = req.query; 
-        let documents;
+        const { id } = req.params;
+        const { userId, document } = req.body;
 
-        if (createdDate || reservedDate) {
-            documents = await appointmentModel.find();
-            documents = documents.filter(doc => 
-                (createdDate && isToday(new Date(doc.createdDate))) ||
-                (reservedDate && isToday(new Date(doc.reservedDate)))
-            );
-        } else {
-            documents = await appointmentModel.find();
+        const user = await userModel.findById({ _id: userId });
+
+        const reserve = await documentTitleModel.findById(id);
+
+        const exist = await appointmentModel.findOne({ userId, document: document });
+
+        if(exist){
+            return res.status(400).json({ message: 'You have already reserved this document' });
         }
-        
-        res.json(documents);
-        
+
+        //reserve the document
+        const reservedDocument = new appointmentModel({
+            userId: userId,
+            document: reserve.title,
+            name: `${user.firstname} ${user.middlename} ${user.lastname}`,
+            address: user.address,
+        });
+        const savedReservation = await reservedDocument.save();
+
+        // Save the transaction to the user history with the appointment ID
+        if(savedReservation._id){
+            const transactionHistory = new transactionModel({
+                uniqueId: savedReservation._id,
+                userId: userId,
+                document: reserve.title,
+            });
+
+            await transactionHistory.save();
+        }
+
+        res.status(201).json(savedReservation);
+
     } catch (error) {
-        console.error('Error fetching appointments: ', error);
-        res.status(500).json({ error: 'Documents fetching error' });
+        console.error('Error reserving document: ', error);
+        res.status(500).json({ error: 'Failed to reserve document' });
     }
 });
 
@@ -77,46 +97,46 @@ router.post('/:id', async (req, res) => {
     }
 });
 
-router.post('/reserve/:id', async (req, res) => {
+router.put('/notifications/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId, document } = req.body;
 
-        const user = await userModel.findById({ _id: userId });
+        const notification = await appointmentModel.findByIdAndUpdate(
+            id,
+            { isRead: true },
+            { new: true }
+        );
 
-        const reserve = await documentTitleModel.findById(id);
-
-        const exist = await appointmentModel.findOne({ userId, document: document });
-
-        if(exist){
-            return res.status(400).json({ message: 'You have already reserved this document' });
+        if (!notification) {
+            return res.status(404).json({ error: 'Notification not found' });
         }
 
-        //reserve the document
-        const reservedDocument = new appointmentModel({
-            userId: userId,
-            document: reserve.title,
-            name: `${user.firstname} ${user.middlename} ${user.lastname}`,
-            address: user.address,
-        });
-        const savedReservation = await reservedDocument.save();
-
-        // Save the transaction to the user history with the appointment ID
-        if(savedReservation._id){
-            const transactionHistory = new transactionModel({
-                uniqueId: savedReservation._id,
-                userId: userId,
-                document: reserve.title,
-            });
-
-            await transactionHistory.save();
-        }
-
-        res.status(201).json(savedReservation);
+        res.status(200).json({ updatedNotification: notification });
 
     } catch (error) {
-        console.error('Error reserving document: ', error);
-        res.status(500).json({ error: 'Failed to reserve document' });
+        console.error('Error updating isRead: ', error);
+        res.status(500).json({ error: 'Failed to update the isRead' });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await appointmentModel.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Appointment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting appointment: ', error);
+        res.status(500).json({ error: 'Failed to delete appointment' });
+    }
+});
+
+router.delete('/', async (req, res) => {
+    try {
+        await appointmentModel.deleteMany();
+        res.status(200).json({ message: 'Appointments deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting all appointments: ', error);
+        res.status(500).json({ error: 'Failed to delete all the appointments' });
     }
 });
  
@@ -129,6 +149,29 @@ router.get('/:id', async (req, res) => {
         console.error('Error fetching apppointment')
         res.status(500).json({ error: 'Failed to fetch appointment' })
     }
-})
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const { createdDate, reservedDate } = req.query; 
+        let documents;
+
+        if (createdDate || reservedDate) {
+            documents = await appointmentModel.find();
+            documents = documents.filter(doc => 
+                (createdDate && isToday(new Date(doc.createdDate))) ||
+                (reservedDate && isToday(new Date(doc.reservedDate)))
+            );
+        } else {
+            documents = await appointmentModel.find();
+        }
+        
+        res.json(documents);
+        
+    } catch (error) {
+        console.error('Error fetching appointments: ', error);
+        res.status(500).json({ error: 'Documents fetching error' });
+    }
+});
 
 module.exports = router;

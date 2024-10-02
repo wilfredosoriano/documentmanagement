@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import SettingSidebar from './Settings/SettingSidebar';
-import { EditIcon } from 'lucide-react';
+import { CircleUser, EditIcon } from 'lucide-react';
 import { useUser } from './Contexts/UserProvider';
 import axios from 'axios';
 import { useToast } from './ui/use-toast';
@@ -15,7 +15,7 @@ import axiosInstance from './Interceptors/axiosInstance';
 
 export default function Profile() {
 
-    const { user } = useUser();
+    const { user, profile, setProfile } = useUser();
     const userId = user?.userId;
     const { toast } = useToast();
     const accessToken = sessionStorage.getItem('accessToken');
@@ -26,24 +26,19 @@ export default function Profile() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
-    const [profile, setProfile] = useState('');
     const [profilePreview, setProfilePreview] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null); 
 
     useEffect(() => {
         if(userId){
-            const cachedProfile = localStorage.getItem('profileImage');
-            if (cachedProfile) {
-                setProfile(cachedProfile);
-            }    
 
             axios.get(`http://localhost:5000/api/users/info/${userId}`)
             .then(response => {
                 const { firstname, email, profile } = response.data;
                 setFirstname(firstname || '');
                 setEmail(email || '');
-                setProfile(profile || cachedProfile);
-                localStorage.setItem('profileImage', profile);
+                setProfile(profile);
             })
             .catch(error => {
             console.error('Error fetching user data:', error);
@@ -74,7 +69,7 @@ export default function Profile() {
         setIsLoading(true);
 
         setTimeout(() => {
-            axiosInstance.put('/users/updatePassword', { userId, currentPassword, newPassword })
+            axiosInstance.put('/users/updatePassword', { userId, currentPassword, newPassword }, { headers: { 'Authorization': accessToken } })
             .then(() => {
                 toast({ 
                     description: 'Password has been updated.',
@@ -88,13 +83,28 @@ export default function Profile() {
                 setIsLoading(false);
             })
             .catch(error => {
-                if(error.response.status === 400){
+                if (error.response) {
+                    if (error.response.status === 400) {
+                        toast({
+                            variant: 'destructive',
+                            description: 'Please input your correct current password',
+                        });
+                    } else if (error.response.status === 401) {
+                        toast({
+                            variant: 'destructive',
+                            description: 'Unauthorized. Please log in again.',
+                        });
+                    } else {
+                        toast({
+                            variant: 'destructive',
+                            description: 'An unexpected error occurred. Please try again.',
+                        });
+                    }
+                } else {
                     toast({
                         variant: 'destructive',
-                        description: 'Please input your correct current password',
+                        description: 'Network error. Please check your connection and try again.',
                     });
-                } else { 
-                    console.error('Error updating password: ', error);
                 }
                 setIsLoading(false);
             });
@@ -107,7 +117,7 @@ export default function Profile() {
 
     const handleProfileOnchange = (e) => {
         const file = e.target.files[0];
-        setProfile(file);
+        setSelectedFile(file);
         if (file) {
           const imageUrl = URL.createObjectURL(file);
           setProfilePreview(imageUrl);
@@ -119,7 +129,7 @@ export default function Profile() {
 
         const formData = new FormData();
 
-        formData.append('profile', profile);
+        formData.append('profile', selectedFile);
         formData.append('userId', userId);
         formData.append('firstname', firstname);
 
@@ -132,8 +142,6 @@ export default function Profile() {
 
                 setProfile(user.profile); 
                 setFirstname(user.firstname);
-                
-                localStorage.setItem('profileImage', user.profile);
 
                 toast({
                     description: 'Profile has been updated.',
@@ -158,16 +166,12 @@ export default function Profile() {
              <form onSubmit={handleUpdate}>
                 <div className='flex flex-row gap-6 max-sm:flex-col'>
                     <div className='flex flex-col items-center gap-3'>
-                        {!profile ? (
-                            <img src={crush} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                        {profilePreview ? (
+                            <img src={profilePreview} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
+                        ) : profile ? (
+                            <ImageFormat src={profile} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
                         ) : (
-                            <>
-                            {profilePreview ? (
-                                <img src={profilePreview} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
-                            ) : (
-                                <ImageFormat src={profile} className='h-28 w-28 object-cover rounded-full border-2 border-black'/>
-                            )}
-                            </>
+                            <CircleUser className='h-28 w-28'/>
                         )}
                         <input type='file' id='fileInput' accept='image/*' className='hidden' onChange={handleProfileOnchange}/>
                         <EditIcon 

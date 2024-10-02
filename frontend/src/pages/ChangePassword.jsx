@@ -4,6 +4,7 @@ import { LuGraduationCap } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useToast } from '@/components/ui/use-toast';
 
 const ChangePassword = () => {
 
@@ -11,6 +12,7 @@ const ChangePassword = () => {
     const location = useLocation();
     const userId = location.state.userId;
     const [newPassword, setNewPassword] = useState('');
+    const { toast } = useToast();
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
@@ -19,14 +21,18 @@ const ChangePassword = () => {
           alert('Password changed successfully');
           navigate('/login');
         } catch (error) {
-          alert('An error occurred');
+          console.error('Error changing password: ', error);
+          toast({
+            variant: 'destructive',
+            description: 'Network error. Please check your connection and try again.',
+        });
         }
       };
 
   return (
     <div className='flex flex-col items-center justify-center w-full h-full'>
         <h1 className='flex flex-row gap-2 items-center text-lg font-bold font-sans '><LuGraduationCap size={30}/> UniForms</h1>
-       <form action="" onSubmit={handleChangePassword} className='flex flex-col gap-2 my-5 p-10 bg-white rounded-2xl shadow-xl w-64 sm:w-64 sm:p-10 md:w-72 md:p-12 lg:w-80 lg:p-14 xl:w-96 xl:p-16 2xl:w-1/4 2xl:p-20'>
+       <form action="" onSubmit={handleChangePassword} className='flex flex-col gap-2 my-5 px-12 py-14 bg-white rounded-2xl shadow-xl mx-5 w-80 sm:w-80 md:w-96 lg:w-96 transition-all'>
         <Input placeholder="Password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
         <Button type="submit">Update Password</Button>
        </form>

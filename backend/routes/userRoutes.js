@@ -15,9 +15,12 @@ const upload = multer({ storage: storage });
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
+    
     const user = await userModel.findOne({ email });
+
+
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ field: 'email', message: 'Email does not exist' });
     }
 
     if (password === user.password) {
@@ -31,7 +34,7 @@ router.post('/login', async (req, res) => {
       }
 
       if (!result) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({ field: 'password', message: 'Incorrect password' });
       } else {
 
         const accessToken = jwt.sign(
@@ -58,7 +61,7 @@ router.post('/login', async (req, res) => {
           httpOnly: true,
           sameSite: 'Strict',
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 7 * 24 * 60 * 60 * 1000,
+          maxAge: 604800000, 
         })
 
         return res.status(200).json({ message: 'User logged in successfully', accessToken });

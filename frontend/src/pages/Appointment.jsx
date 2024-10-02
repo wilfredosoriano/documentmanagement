@@ -35,12 +35,12 @@ const Appointment = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete('http://localhost:5000/api/titles')
+    axios.delete('http://localhost:5000/api/appointments')
       .then(() => {
         setData([]);
         toast({
           variant: "destructive",
-          description: "Document has been deleted.",
+          description: "Documents has been deleted.",
         });
       })
       .catch(error => {

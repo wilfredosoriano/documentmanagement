@@ -1,12 +1,14 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import wilfredo from '../assets/images/wilfredo.jpg'
+import crush from '../assets/images/wilfredo.jpg'
 import Notification from './Notification';
 import { useUser } from './Contexts/UserProvider';
+import ImageFormat from '@/mobile/mobileComponents/ImageFormat';
+import { CircleUser } from 'lucide-react';
 
 const PageHeader = () => {
     const location = useLocation();
-    const { user } = useUser();
+    const { user, profile } = useUser();
 
     const getTitle = (pathname) => {
         switch(pathname) {
@@ -38,7 +40,12 @@ const PageHeader = () => {
             <div className='relative'>
                 <Notification />
             </div>
-            <img src={wilfredo} className='w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 border-2 rounded-full border-primary' />
+            {!profile ? (
+                // <img src={crush} className='h-8 w-8 object-cover sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full border-2 border-black'/>
+                <CircleUser className='h-8 w-8'/>
+            ) : (
+                <ImageFormat src={profile} className='w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 border-2 rounded-full border-primary' />
+            )}
             {user?.username}
         </div>
 

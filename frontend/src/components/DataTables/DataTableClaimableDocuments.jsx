@@ -48,6 +48,7 @@ import {
 } from '../ui/dialog';
 import { useToast } from '../ui/use-toast';
 import DocumentTracking from '../DocumentTracking';
+import { formatDate } from '@/utils/dateUtils';
 
 const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, handleClaimConfirm }) => {
   const { toast } = useToast();
@@ -63,24 +64,6 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
   const [isDialogStatus, setIsDialogStatus] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('');
   const [claimedDate, setClaimedDate] = useState('');
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-
-    const formattedDate = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }).format(date);
-
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    }).format(date);
-
-    return `${formattedDate} ${formattedTime}`;
-  };
 
   const handleViewDocument = (id) => {
     axios

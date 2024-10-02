@@ -78,7 +78,7 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
   const includeSearchbar = '/mobileDocuments';
  
   return (
-    <div className='flex justify-between bg-white items-center p-4 border-b fixed top-0 w-full h-[64px]'>
+    <div className='flex justify-between bg-white items-center p-4 border-b fixed top-0 w-full h-[64px] z-50'>
       {!showSearch && (
       <div className='flex flex-row items-center gap-1 cursor-pointer mr-20 max-md:mr-10'>
         <LuGraduationCap size={30} />

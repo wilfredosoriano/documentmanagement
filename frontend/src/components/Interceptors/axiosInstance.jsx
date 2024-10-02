@@ -14,7 +14,7 @@ axiosInstance.interceptors.response.use(
 
             try {
                 
-                const refresResponse = await axios.post('/api/users/refreshToken');
+                const refresResponse = await axios.post('http://localhost:5000/api/users/refreshToken', {}, { withCredentials: true });
                 const newAccessToken = refresResponse.data.accessToken;
 
                 sessionStorage.setItem('accessToken', newAccessToken);
@@ -24,9 +24,12 @@ axiosInstance.interceptors.response.use(
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
                 console.error('Refresh token expired or invalid', refreshError);
+                logoutUser();
                 return Promise.reject(refreshError);
             }
         }
+
+        return Promise.reject(error);
     }
 );
 

@@ -13,26 +13,6 @@ const isToday = (someDate) => {
     someDate.getFullYear() === today.getFullYear();
 }
 
-router.get('/', async (req, res) => {
-    try {
-      const { date } = req.query;
-      let documents;
-
-      if (date) {
-        documents = await documentModel.find();
-        documents = documents.filter(doc => isToday(new Date(doc.createdDate)));
-
-      } else {
-        documents = await documentModel.find();
-      }  
-
-      res.json(documents);
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-      res.status(500).json({ error: 'Failed to fetch document' });
-    }
-})
-
 router.get('/title/:document', async (req, res) => {
   try {
     const { document }  = req.params;
@@ -43,37 +23,6 @@ router.get('/title/:document', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch documents' });
   }
 })
-
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const document = await documentModel.findById(id);
-    res.json(document);
-  } catch (error) {
-    console.error('Failed fetching document: ', error)
-    res.status(500).json({ error: 'Failed to fetch document' });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await documentModel.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Document deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete document' });
-  }
-});
-
-router.delete('/', async (req, res) => {
-  try {
-    await documentModel.deleteMany();
-    res.status(200).json({ message: 'Documents deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete document' });
-  }
-});
 
 router.post('/claim/:id', async (req, res) => {
   try {
@@ -127,5 +76,56 @@ router.post('/claim/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to create document' });
   }
 });
+
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const document = await documentModel.findById(id);
+    res.json(document);
+  } catch (error) {
+    console.error('Failed fetching document: ', error)
+    res.status(500).json({ error: 'Failed to fetch document' });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await documentModel.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete document' });
+  }
+});
+
+router.delete('/', async (req, res) => {
+  try {
+    await documentModel.deleteMany();
+    res.status(200).json({ message: 'Documents deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete document' });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const { date } = req.query;
+    let documents;
+
+    if (date) {
+      documents = await documentModel.find();
+      documents = documents.filter(doc => isToday(new Date(doc.createdDate)));
+
+    } else {
+      documents = await documentModel.find();
+    }  
+
+    res.json(documents);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ error: 'Failed to fetch document' });
+  }
+})
 
 module.exports = router;
