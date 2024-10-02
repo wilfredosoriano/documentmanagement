@@ -17,7 +17,7 @@ const ChangePassword = () => {
     const handleChangePassword = async (e) => {
         e.preventDefault();
         try {
-          await axios.post('http://localhost:5000/api/users/changePassword', { userId, newPassword });
+          await axios.post(`${import.meta.env.VITE_API_URL}/users/changePassword`, { userId, newPassword });
           toast({
             description: 'Password changed successfully',
           });

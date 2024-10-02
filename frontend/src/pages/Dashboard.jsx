@@ -4,11 +4,6 @@ import DashboardBox from '@/components/DashboardBox';
 import axios from 'axios';
 import { LuFolder, LuUsers, LuCalendar, } from 'react-icons/lu';
 import DashboardChart from '@/components/Charts/DashboardChart';
-import DashboardPieChart from '@/components/Charts/DashboardPieChart';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import wilfredo from '../assets/images/wilfredo.jpg';
-import { Button } from '@/components/ui/button';
-import { GrDisabledOutline } from 'react-icons/gr';
 
 const Dashboard = () => {
   const [totalDocuments, setTotalDocuments] = useState(0);
@@ -24,7 +19,7 @@ const Dashboard = () => {
   }, []);
 
   const fetchDocuments = () => {
-    axios.get('http://localhost:5000/api/titles')
+    axios.get(`${import.meta.env.VITE_API_URL}/titles`)
       .then(response => {
         setTotalDocuments(response.data.length);
       }).catch(error => {
@@ -35,7 +30,7 @@ const Dashboard = () => {
   const fetchDocumentsToday = () => {
     const today = new Date().toISOString().split('T')[0];
 
-    axios.get(`http://localhost:5000/api/documents?date=${today}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/documents?date=${today}`)
       .then(response => {
         setTotalDocumentsToday(response.data.length);
       }).catch(error => {
@@ -44,7 +39,7 @@ const Dashboard = () => {
   };
 
   const fetchUsers = () => {
-    axios.get('http://localhost:5000/api/users')
+    axios.get(`${import.meta.env.VITE_API_URL}/users`)
       .then(response => {
         setTotalUsers(response.data.length);
       }).catch(error => {
@@ -53,7 +48,7 @@ const Dashboard = () => {
   };
 
   const fetchAppointments = () => {
-    axios.get('http://localhost:5000/api/appointments')
+    axios.get(`${import.meta.env.VITE_API_URL}/appointments`)
     .then(response => {
       setTotalAppointments(response.data.length);
     })

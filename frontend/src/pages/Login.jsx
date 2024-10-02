@@ -50,7 +50,7 @@ const Login = () => {
         }
 
         try {
-          const response = await axios.post('http://localhost:5000/api/users/login', { email, password }, { withCredentials: true });
+          const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, { email, password }, { withCredentials: true });
           if (response.data.message === 'Change Password Required') {
             navigate('/changePassword', { state: { userId: response.data.userId } });
           } else {
@@ -66,7 +66,7 @@ const Login = () => {
             //insert the device type and count
             const currentDate = new Date();
             const userId = decodedToken.userId;
-            await axios.post('http://localhost:5000/api/users/deviceCounts', { deviceType, userId, currentDate });
+            await axios.post(`${import.meta.env.VITE_API_URL}/users/deviceCounts`, { deviceType, userId, currentDate });
 
             //redirect user or admin to their own components
             if (decodedToken.role === 'admin') {
