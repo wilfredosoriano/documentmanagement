@@ -7,7 +7,7 @@ import LogOut from '@/components/LogOut';
 import { useUser } from '@/components/Contexts/UserProvider';
 import ReserveDialog from './Dialogs/ReserveDialog';
 
-export default function Header({ toggleMenu, setFilteredDocuments }) {
+export default function Header({ toggleMenu, setFilteredDocuments, setIsFetching }) {
   const location = useLocation();
   const [showSearch, setShowSearch] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -32,6 +32,7 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
   }, [setShowSearch]);
 
   useEffect(() => {
+    setIsFetching(true);
     const fetchDocuments = () => {
       axios.get(`${import.meta.env.VITE_API_URL}/titles/document-counts`)
       .then(response => {
@@ -39,8 +40,10 @@ export default function Header({ toggleMenu, setFilteredDocuments }) {
         if (setFilteredDocuments) {
           setFilteredDocuments(response.data);
         }
+        setIsFetching(false);
       }).catch(error => {
         console.error('Error fetching documents', error);
+        setIsFetching(false);
       })
     };
 

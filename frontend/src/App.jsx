@@ -15,11 +15,11 @@ import MobileTransactions from './mobile/MobileTransactions';
 import { UserProvider } from './components/Contexts/UserProvider';
 import MobileRequestTicket from './mobile/MobileRequestTicket';
 import MobileProfile from './mobile/MobileProfile';
-import { useUser } from './components/Contexts/UserProvider';
 
 function AppContent() {
   const location = useLocation();
-  const { user } = useUser();
+
+  const user = JSON.parse(sessionStorage.getItem('user'));
   
   const hiddenPaths = [
     '/login', 
@@ -31,9 +31,9 @@ function AppContent() {
   ];
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
-  
+
   if (!user && location.pathname !== '/login') {
-    return <Navigate to='/login' />;
+    return <Navigate to="/login" />;
   }
 
   return (
