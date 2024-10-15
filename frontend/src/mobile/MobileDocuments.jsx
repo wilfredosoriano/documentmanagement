@@ -14,7 +14,6 @@ const MobileDocuments = () => {
   const [isDialogReserve, setIsDialogReserve] = useState(false);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -44,16 +43,10 @@ const MobileDocuments = () => {
 
   return (
     <div>
-        <Header toggleMenu={toggleMenu} setFilteredDocuments={setFilteredDocuments} setIsFetching={setIsFetching}/>
+        <Header toggleMenu={toggleMenu} setFilteredDocuments={setFilteredDocuments}/>
         <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
         <div className={`overflow-auto p-4 mt-[65px] max-sm:mb-16 ${menuOpen ? 'mr-[240px]' : 'mr-[96px] max-sm:mr-0'} `}>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {isFetching ? (
-              [...Array(filteredDocuments.length)].map((_, index) => (
-                <Skeleton key={index} className="h-[250px] w-[500px] rounded-xl" />
-              ))
-            ) : ( 
-              <>
             {filteredDocuments.map((doc) => (
               <DocumentBox
                 key={doc._id}
@@ -63,9 +56,6 @@ const MobileDocuments = () => {
                 handleReserve={() => handleReserve(doc._id)}
               />
             ))}
-            </>
-          )}
-
           </div>
         </div>
 

@@ -32,7 +32,6 @@ export default function Header({ toggleMenu, setFilteredDocuments, setIsFetching
   }, [setShowSearch]);
 
   useEffect(() => {
-    setIsFetching(true);
     const fetchDocuments = () => {
       axios.get(`${import.meta.env.VITE_API_URL}/titles/document-counts`)
       .then(response => {
@@ -40,10 +39,8 @@ export default function Header({ toggleMenu, setFilteredDocuments, setIsFetching
         if (setFilteredDocuments) {
           setFilteredDocuments(response.data);
         }
-        setIsFetching(false);
       }).catch(error => {
         console.error('Error fetching documents', error);
-        setIsFetching(false);
       })
     };
 
