@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { LuBell, LuCheck } from 'react-icons/lu';
+import { LuBell } from 'react-icons/lu';
 import { Button } from './ui/button'; 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';

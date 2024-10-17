@@ -38,7 +38,6 @@ const MobileRequestTicket = ({ randomNumber, documentName, documentPrice, finalP
                 <p className='font-bold text-sm md:text-md lg:text-lg'>{finalPrice}</p>
             </div>
         </div>
-            <p className='text-center text-xs md:text-sm lg:text-md print:hidden'>Note: Please print this invoice and submit the printed copy to the registrar to claim the document.</p>
     </div>
   )
 }

@@ -12,14 +12,14 @@ import Login from './pages/Login';
 import ChangePassword from './pages/ChangePassword';
 import MobileDocuments from './mobile/MobileDocuments';
 import MobileTransactions from './mobile/MobileTransactions';
-import { UserProvider } from './components/Contexts/UserProvider';
+import { UserProvider, useUser } from './components/Contexts/UserProvider';
 import MobileRequestTicket from './mobile/MobileRequestTicket';
 import MobileProfile from './mobile/MobileProfile';
 
 function AppContent() {
   const location = useLocation();
 
-  const user = JSON.parse(sessionStorage.getItem('user'));
+  const { user } = useUser();
   
   const hiddenPaths = [
     '/login', 
@@ -32,9 +32,9 @@ function AppContent() {
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
 
-  // if (!user && location.pathname !== '/login') {
-  //   return <Navigate to="/login" />;
-  // }
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <div className='h-screen flex bg-background text-primary'>
