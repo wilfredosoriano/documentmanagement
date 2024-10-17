@@ -32,16 +32,16 @@ function AppContent() {
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
 
-  if (!user && location.pathname !== '/login') {
-    return <Navigate to="/login" />;
-  }
+  // if (!user && location.pathname !== '/login') {
+  //   return <Navigate to="/login" />;
+  // }
 
   return (
     <div className='h-screen flex bg-background text-primary'>
       {!hideSidebar && <Sidebar />}
       <div className={`${hideSidebar ? 'flex-1 overflow-auto' : 'flex-1 overflow-auto bg-background border border-border'}`}>
         <Routes>
-        <Route path='/' element={<Navigate to='/login'/>} />
+          <Route path='/' element={<Navigate to='/login'/>} />
           <Route path='/login' element={<Login />} />
           <Route path='/changePassword' element={<ChangePassword/>} />
           <Route path='/dashboard' element={<Dashboard />} />

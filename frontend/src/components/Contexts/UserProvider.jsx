@@ -29,9 +29,19 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = sessionStorage.getItem('user');
     if(storedUser){
-      setUser(JSON.parse(storedUser));
+      const user = JSON.parse(storedUser)
+      setUser(user);
+      axios.get(`${import.meta.env.VITE_API_URL}/users/info/${user.userId}`)
+      .then(response => {
+        const { profile } = response.data;
+        setProfile(profile);
+      })
+      .catch(error => {
+        console.error('Error fetching user profile:', error);
+      });
     }
   },[])
+
 
   return (
     <UserContext.Provider value={{ user, login, logout, profile, setProfile }}>

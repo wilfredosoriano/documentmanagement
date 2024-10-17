@@ -42,6 +42,24 @@ router.get('/document-counts', async (req, res) => {
   }
 });
 
+router.get('/getPrice', async (req, res) => {
+  try {
+    const { document } = req.query;
+
+    const price = await documentTitleModel.findOne({ title: document });
+
+    if (!price) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    res.json(price);
+
+  } catch (error) {
+    console.error('Error getting the price: ', error);
+    res.status(500).json({ error: 'Failed to get the price' });
+  }
+});
+
 router.post('/', upload.single('image'), async (req, res) => {
   try {
       const { title, price, description } = req.body;

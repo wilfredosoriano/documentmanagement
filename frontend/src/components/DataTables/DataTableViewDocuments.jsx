@@ -122,6 +122,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
     axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
     .then((response) => {
       const data = response.data;
+      setDocument(data);
       setIsDialogClaim(true);
       setDateError('');
       setCalendarDate('');
@@ -137,7 +138,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
     setIsDialogClaim(false);
   };
 
-  const handleDialogClaimConfirm = () => {
+  const handleDialogClaimConfirm = (userId, document) => {
     if (!calendarDate) {
       setDateError('Please pick a date first');
       return;
@@ -145,7 +146,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
 
     const formattedDate = formatCalendarDate(calendarDate);
 
-    handleClaimConfirm(documentId, formattedDate);
+    handleClaimConfirm(documentId, formattedDate, userId, document);
     setIsDialogClaim(false);
   };
 
@@ -425,6 +426,8 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
             </DialogDescription>
           </DialogHeader>
           <Popover>
+              
+
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -437,7 +440,8 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
                   {calendarDate ? formatCalendarDate(calendarDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0">       
+              
                 <Calendar
                   mode="single"
                   selected={calendarDate}
@@ -449,7 +453,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
             <span className='text-red-600 text-xs'>{dateError}</span>
             <DialogFooter>
               <Button variant='outline' onClick={handleDialogClaimClose}>Cancel</Button>
-              <Button onClick={handleDialogClaimConfirm}>Confirm</Button>
+              <Button onClick={() => handleDialogClaimConfirm(document.userId, document.document)}>Confirm</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>

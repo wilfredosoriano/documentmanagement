@@ -16,7 +16,7 @@ const Appointment = () => {
     .then(response => {
       setData(response.data);
     }).catch(error => {
-      console.error('Error fetching documents: ', error);
+      console.error('Error fetching appointments: ', error);
     });
   },[])
 

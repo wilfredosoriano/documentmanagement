@@ -1,9 +1,7 @@
-import { Button } from '@/components/ui/button';
-import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min';
 import React from 'react';
-import { LuGraduationCap, LuPrinter } from 'react-icons/lu';
+import { LuGraduationCap, } from 'react-icons/lu';
 
-const MobileRequestTicket = ({ randomNumber }) => {
+const MobileRequestTicket = ({ randomNumber, documentName, documentPrice, finalPrice }) => {
 
   return (
     <div className='m-12 md:m-20 lg:m-32 transition-all'>
@@ -29,15 +27,15 @@ const MobileRequestTicket = ({ randomNumber }) => {
         <div>
             <h1 className='mb-8'>Document Name: </h1>
             <div className='flex flex-row justify-between'>
-                <h1 className='font-bold text-sm md:text-md lg:text-lg'>Transcript of Records</h1>
-                <h1 className='text-sm md:text-md lg:text-lg'>800.00</h1>
+                <h1 className='font-bold text-sm md:text-md lg:text-lg'>{documentName}</h1>
+                <h1 className='text-sm md:text-md lg:text-lg'>{documentPrice}</h1>
             </div>
         </div>
         <div className='my-16 flex flex-col items-end'>
             <p className='mb-5 text-sm md:text-md lg:text-lg'>Precessing fee: 20.00</p>
             <div className='flex items-end gap-1'>
                 <p>Total:</p>
-                <p className='font-bold text-sm md:text-md lg:text-lg'>820.00</p>
+                <p className='font-bold text-sm md:text-md lg:text-lg'>{finalPrice}</p>
             </div>
         </div>
             <p className='text-center text-xs md:text-sm lg:text-md print:hidden'>Note: Please print this invoice and submit the printed copy to the registrar to claim the document.</p>
