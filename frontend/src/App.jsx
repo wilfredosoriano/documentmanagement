@@ -32,7 +32,9 @@ function AppContent() {
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
 
-  if (!user) {
+  const withoutAuth = ['/login', '/changePassword']
+
+  if (!user && !withoutAuth.includes(location.pathname)) {
     return <Navigate to="/login" />;
   }
 
