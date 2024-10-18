@@ -60,7 +60,7 @@ const Login = () => {
             const userData = { role: decodedToken.role, userId: decodedToken.userId, username: decodedToken.username };
             login(userData);
 
-            sessionStorage.setItem('accessToken', accessToken);
+            // sessionStorage.setItem('accessToken', accessToken);
             axios.defaults.headers.common['Authorization'] = accessToken;
 
             //insert the device type and count

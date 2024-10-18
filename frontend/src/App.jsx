@@ -18,10 +18,9 @@ import MobileProfile from './mobile/MobileProfile';
 
 function AppContent() {
   const location = useLocation();
-
-  const { user } = useUser();
   
   const hiddenPaths = [
+    '/',
     '/login', 
     '/changePassword', 
     '/mobileDocuments', 
@@ -31,12 +30,6 @@ function AppContent() {
   ];
   
   const hideSidebar = hiddenPaths.includes(location.pathname);
-
-  const withoutAuth = ['/login', '/changePassword']
-
-  if (!user && !withoutAuth.includes(location.pathname)) {
-    return <Navigate to="/login" />;
-  }
 
   return (
     <div className='h-screen flex bg-background text-primary'>

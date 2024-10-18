@@ -294,6 +294,34 @@ router.get('/info/:id', async (req, res) => {
   }
 });
 
+router.get('/info', async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+
+    const user = await userModel.findById(decoded.userId).select('-password'); // Exclude password
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      userId: user._id,
+      role: user.role,
+      username: user.firstname,
+      profile: user.profile,
+    });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
 router.post('/logout', (req, res) => {
   res.clearCookie('token');
   return res.status(200).json({ message: 'User logged out successfully' });
