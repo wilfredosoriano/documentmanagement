@@ -2,6 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
 axiosInstance.interceptors.response.use(
@@ -19,7 +20,7 @@ axiosInstance.interceptors.response.use(
 
                 sessionStorage.setItem('accessToken', newAccessToken);
 
-                originalRequest.headers['Authorization'] = newAccessToken;
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
                 return axiosInstance(originalRequest);
             } catch (refreshError) {

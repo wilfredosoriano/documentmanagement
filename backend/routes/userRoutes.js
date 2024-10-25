@@ -18,16 +18,19 @@ router.post('/login', async (req, res) => {
     
     const user = await userModel.findOne({ email });
 
-
     if (!user) {
       return res.status(401).json({ field: 'email', message: 'Email does not exist' });
+    }
+
+    if (user.isLoggedIn) {
+      return res.status(400).json({ error: 'User is logged in from another session' });
     }
 
     if (password === user.password) {
       return res.status(200).json({ message: 'Change Password Required', userId: user._id });
     }
 
-    bcrypt.compare(password, user.password, function(err, result) {
+    bcrypt.compare(password, user.password, async function(err, result) {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: 'Internal server error' });
@@ -57,6 +60,9 @@ router.post('/login', async (req, res) => {
           { expiresIn: '7d' }
         );
 
+        user.isLoggedIn = true;
+        await user.save();
+
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           sameSite: 'Strict',
@@ -64,7 +70,7 @@ router.post('/login', async (req, res) => {
           maxAge: 604800000, 
         })
 
-        return res.status(200).json({ message: 'User logged in successfully', accessToken });
+        return res.status(200).json({ message: 'User logged in successfully', accessToken, profile: user.profile });
       }
     });
 
@@ -295,7 +301,7 @@ router.get('/info/:id', async (req, res) => {
 });
 
 router.get('/info', async (req, res) => {
-  const token = req.cookies.refreshToken;
+  const { token } = req.body;
 
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -305,7 +311,7 @@ router.get('/info', async (req, res) => {
     const decoded = jwt.verify(token, secretKey);
 
     const user = await userModel.findById(decoded.userId).select('-password'); // Exclude password
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -322,9 +328,23 @@ router.get('/info', async (req, res) => {
   }
 });
 
-router.post('/logout', (req, res) => {
-  res.clearCookie('token');
-  return res.status(200).json({ message: 'User logged out successfully' });
+router.post('/logout', authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await userModel.findById(userId);
+
+    if (user) {
+      user.isLoggedIn = false;
+      await user.save();
+    }
+
+    res.clearCookie('token');
+    return res.status(200).json({ message: 'User logged out successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.post('/', (req, res) => {

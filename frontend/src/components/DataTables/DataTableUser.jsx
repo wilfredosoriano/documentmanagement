@@ -30,8 +30,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import CustomDialog from '../DialogBoxes/CustomDialog'
-import axios from 'axios'
 import DialogBoxEditUser from '../DialogBoxes/UserDialogs/DialogBoxEditUser'
+import axiosInstance from '../Interceptors/axiosInstance'
 
 const DataTableUser = ({ data, handleDelete, handleDeleteAll, handleOnClickEdit }) => {
     const [sorting, setSorting] = useState([]);
@@ -44,8 +44,8 @@ const DataTableUser = ({ data, handleDelete, handleDeleteAll, handleOnClickEdit 
     const [currentUserId, setCurrentUserId] = useState(null);
 
     const handleViewUser = (id) => {
-      axios
-        .get(`${import.meta.env.VITE_API_URL}/users/info/${id}`)
+      axiosInstance
+        .get(`/users/info/${id}`)
         .then((response) => {
           const data = response.data;
           setUser(data);

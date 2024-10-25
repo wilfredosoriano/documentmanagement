@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import PageHeader from '@/components/PageHeader';
 import DashboardBox from '@/components/DashboardBox';
-import axios from 'axios';
 import { LuFolder, LuUsers, LuCalendar, } from 'react-icons/lu';
 import DashboardChart from '@/components/Charts/DashboardChart';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const Dashboard = () => {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalDocumentsToday, setTotalDocumentsToday] = useState(0);
-  const [totalAppointments, setTotalAppointments] = useState(0);
 
   useEffect(() => {
     fetchDocuments();
     fetchUsers();
     fetchDocumentsToday();
-    fetchAppointments();
   }, []);
 
   const fetchDocuments = () => {
-    axios.get(`${import.meta.env.VITE_API_URL}/titles`)
+    axiosInstance.get('/titles')
       .then(response => {
         setTotalDocuments(response.data.length);
       }).catch(error => {
@@ -30,7 +28,7 @@ const Dashboard = () => {
   const fetchDocumentsToday = () => {
     const today = new Date().toISOString().split('T')[0];
 
-    axios.get(`${import.meta.env.VITE_API_URL}/documents?date=${today}`)
+    axiosInstance.get(`/documents?date=${today}`)
       .then(response => {
         setTotalDocumentsToday(response.data.length);
       }).catch(error => {
@@ -39,7 +37,7 @@ const Dashboard = () => {
   };
 
   const fetchUsers = () => {
-    axios.get(`${import.meta.env.VITE_API_URL}/users`)
+    axiosInstance.get('/users')
       .then(response => {
         setTotalUsers(response.data.length);
       }).catch(error => {
@@ -47,23 +45,13 @@ const Dashboard = () => {
       });
   };
 
-  const fetchAppointments = () => {
-    axios.get(`${import.meta.env.VITE_API_URL}/appointments`)
-    .then(response => {
-      setTotalAppointments(response.data.length);
-    })
-    .catch(error => {
-      console.error('Error fetching appointments: ', error);
-    })
-  };
-
   return (
     <div className='flex flex-col max-h-screen'>
       <PageHeader />
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 p-5 mt-20'>
-        <DashboardBox title='Total Users' count={totalUsers} logo={<LuUsers size={20} />} />
-        <DashboardBox title='Total Documents' count={totalDocuments} logo={<LuFolder size={20} />} />
-        <DashboardBox title='Request Today' count={totalDocumentsToday} logo={<LuCalendar size={20} />} />
+        <DashboardBox title='Total Users' count={totalUsers} logo={<LuUsers size={20} color='#2A9D90'/>} className='bg-[#2A9D90]'/>
+        <DashboardBox title='Total Documents' count={totalDocuments} logo={<LuFolder size={20} color='#2A9D90'/>} className='bg-[#E76E4F]' />
+        <DashboardBox title='Request Today' count={totalDocumentsToday} logo={<LuCalendar size={20} color='#2A9D90'/>} className='bg-[#3366C2]'/>
 
         <div className='col-span-3'>
           <DashboardChart />

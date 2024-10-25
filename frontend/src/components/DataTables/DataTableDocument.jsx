@@ -47,12 +47,6 @@ const DataTableDocument = ({ data, handleDeleteAll, handleViewDocuments, handleO
         setIsDialogOpen(true);
     }
 
-    const handleDialogClose = () => {
-        setIsDialogOpen(false);
-        setCurrentDocumentId(null);
-    }
-
-
     const columns = useMemo(
         () => [
             {

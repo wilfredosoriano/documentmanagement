@@ -61,6 +61,11 @@ export default function Notification() {
             console.error('Error updating notifications: ', error);
         })
     };
+
+    const handleClickIcon = () => {
+        setNotificationCount(0);
+        localStorage.setItem('notificationCount', 0);
+    };
     
     useEffect(() => {
 
@@ -99,7 +104,7 @@ export default function Notification() {
   return (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 p-0" onClick={handleClickIcon}>
             <span className="sr-only">Open menu</span>
             <LuBell className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7'/>
             {notificationCount > 0 && (

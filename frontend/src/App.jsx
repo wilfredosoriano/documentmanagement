@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import DocumentManagement from './pages/DocumentManagement';
 import UserManagement from './pages/UserManagement';
@@ -34,7 +34,7 @@ function AppContent() {
   return (
     <div className='h-screen flex bg-background text-primary'>
       {!hideSidebar && <Sidebar />}
-      <div className={`${hideSidebar ? 'flex-1 overflow-auto' : 'flex-1 overflow-auto bg-background border border-border'}`}>
+      <div className={`${hideSidebar ? 'flex-1 overflow-auto' : 'flex-1 overflow-auto bg-background'}`}>
         <Routes>
           <Route path='/' element={<Navigate to='/login'/>} />
           <Route path='/login' element={<Login />} />
@@ -57,6 +57,7 @@ function AppContent() {
 }
 
 function App() {
+  
   return (
     <UserProvider>
       <Router>

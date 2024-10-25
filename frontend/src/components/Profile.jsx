@@ -6,7 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import SettingSidebar from './Settings/SettingSidebar';
 import { CircleUser, EditIcon } from 'lucide-react';
 import { useUser } from './Contexts/UserProvider';
-import axios from 'axios';
 import { useToast } from './ui/use-toast';
 import ImageFormat from '@/mobile/mobileComponents/ImageFormat';
 import { LuCheckCircle } from 'react-icons/lu';
@@ -32,7 +31,7 @@ export default function Profile() {
     useEffect(() => {
         if(userId){
 
-            axios.get(`${import.meta.env.VITE_API_URL}/users/info/${userId}`)
+            axiosInstance.get(`/users/info/${userId}`)
             .then(response => {
                 const { firstname, email, profile } = response.data;
                 setFirstname(firstname || '');
@@ -135,7 +134,7 @@ export default function Profile() {
         setIsLoading(true);
 
         setTimeout(() => {
-            axios.put(`${import.meta.env.VITE_API_URL}/users/updateProfile`, formData)
+            axiosInstance.put('/users/updateProfile', formData)
             .then(response => {
                 const { user } = response.data; 
 
@@ -159,7 +158,7 @@ export default function Profile() {
 
   return (
     <div className='flex max-md:flex-col'>
-            <SettingSidebar activeSection={activeSection} onSectionClick={setActiveSection} />
+        <SettingSidebar activeSection={activeSection} onSectionClick={setActiveSection} />
         <div className='flex-1 p-5'>
         {activeSection === 'profile' && (
              <form onSubmit={handleUpdate}>

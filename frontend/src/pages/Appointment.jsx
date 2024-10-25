@@ -2,17 +2,16 @@ import React, { useMemo, useEffect, useState} from 'react';
 import DataTableAppointment from '@/components/DataTables/DataTableAppointment';
 import PageHeader from '@/components/PageHeader';
 import { useToast } from '@/components/ui/use-toast';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const Appointment = () => {
 
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [data, setData] = useState([]);   
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/appointments`)
+    axiosInstance.get('/appointments')
     .then(response => {
       setData(response.data);
     }).catch(error => {
@@ -21,7 +20,7 @@ const Appointment = () => {
   },[])
 
   const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
+    axiosInstance.delete(`/appointments/${id}`)
       .then(() => {
         setData(prevData => prevData.filter(doc => doc._id !== id));
         toast({
@@ -35,7 +34,7 @@ const Appointment = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/appointments`)
+    axiosInstance.delete('/appointments')
       .then(() => {
         setData([]);
         toast({
@@ -49,7 +48,7 @@ const Appointment = () => {
   };
 
   const handleApprove = (id) => {
-    axios.post(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
+    axiosInstance.post(`/appointments/${id}`)
     .then(response => {
       const { updatedAppointment } = response.data;
 

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     address: { type: String, required: true },
     password: { type: String, required: true },
     hasChangedPassword: { type: Boolean, default: false },
+    isLoggedIn: { type: Boolean, default: false },
     profile: String,
     role: { type: String, required: true },
     monthlyDeviceCounts: [{

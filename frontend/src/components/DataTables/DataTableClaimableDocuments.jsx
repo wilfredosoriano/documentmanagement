@@ -37,7 +37,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
-import axios from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +48,7 @@ import {
 import { useToast } from '../ui/use-toast';
 import DocumentTracking from '../DocumentTracking';
 import { formatDate } from '@/utils/dateUtils';
+import axiosInstance from '../Interceptors/axiosInstance';
 
 const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, handleClaimConfirm }) => {
   const { toast } = useToast();
@@ -60,14 +60,13 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogClaim, setIsDialogClaim] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [trackingId, setTrackingId] = useState('');
   const [isDialogStatus, setIsDialogStatus] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('');
   const [claimedDate, setClaimedDate] = useState('');
 
   const handleViewDocument = (id) => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/claimableDocuments/${id}`)
+    axiosInstance
+      .get(`/claimableDocuments/${id}`)
       .then((response) => {
         const data = response.data;
         setDocument(data);
@@ -95,12 +94,11 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
   };
 
   const handleClaim = (id) => {
-    axios
-    .get(`${import.meta.env.VITE_API_URL}/claimableDocuments/${id}`)
+    axiosInstance
+    .get(`/claimableDocuments/${id}`)
     .then((response) => {
       const data = response.data;
       setDocument(data);
-      setTrackingId(data.uniqueId);
       setIsDialogClaim(true);
     })
     .catch((error) => {
@@ -112,18 +110,18 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
     setIsDialogClaim(false);
   };
 
-  const handleDialogClaimConfirm = (id, userId, documentTitle) => {
+  const handleDialogClaimConfirm = (id, userId, documentTitle, trackingId) => {
     handleClaimConfirm(id, userId, documentTitle, trackingId);
     setIsDialogClaim(false);
   };
 
   const handleViewStatus = (id) => {
-    setTrackingId(id);
     setIsDialogStatus(true);
-    axios.get(`${import.meta.env.VITE_API_URL}/claimableDocuments/${id}`)
+    axiosInstance.get(`/claimableDocuments/${id}`)
       .then(response => {
         const status = response.data.status;
         const claimedDate = response.data.claimedDate;
+        setDocument(response.data);
         setCurrentStatus(status);
         setClaimedDate(claimedDate);
       })
@@ -352,11 +350,11 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
             <div className='flex flex-col gap-2'>
                 <div className='flex flex-row items-center gap-2'>
                   <span className='text-muted-foreground'>Tracking ID: </span>
-                    {document._id}
+                    {document.uniqueId}
                     {isCopied ? (
                       <LuCopyCheck />
                     ) : (
-                      <LuCopy className='cursor-pointer' onClick={() => handleCopy(document._id)}/>
+                      <LuCopy className='cursor-pointer' onClick={() => handleCopy(document.uniqueId)}/>
                     )} 
                 </div>
                 <div><span className='text-muted-foreground'>Document: </span>{document.document}</div>
@@ -374,7 +372,7 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
           <DialogHeader>
             <DialogTitle className="text-center">Document Status</DialogTitle>
             <DialogDescription className="text-center">
-              Tracking ID: {trackingId} <br />
+              Tracking ID: {document.uniqueId} <br />
               You can track the status of the document here.
             </DialogDescription>
           </DialogHeader>
@@ -385,7 +383,7 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
       <Dialog open={isDialogClaim} onOpenChange={handleDialogClaimClose}>
         <DialogContent>
           <DialogHeader>
-              <DialogTitle>Are you sure you want to set this Tracking ID: {trackingId} as claimed?</DialogTitle>
+              <DialogTitle>Are you sure you want to set this Tracking ID: {document.uniqueId} as claimed?</DialogTitle>
             <DialogDescription>
               You are about to set the document as claimed. You can't undo the changes.
             </DialogDescription>
@@ -404,7 +402,7 @@ const DataTableClaimableDocuments = ({ data, handleDelete, handleDeleteAll, hand
           )}
             <DialogFooter>
               <Button variant='outline' onClick={handleDialogClaimClose}>Cancel</Button>
-              <Button onClick={() => handleDialogClaimConfirm(document._id, document.userId, document.document)}>Confirm</Button>
+              <Button onClick={() => handleDialogClaimConfirm(document._id, document.userId, document.document, document.uniqueId)}>Confirm</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>

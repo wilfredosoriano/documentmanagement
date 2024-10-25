@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import Header from './mobileComponents/Header';
 import Navigation from './mobileComponents/Navigation';
 import DocumentBox from './mobileComponents/DocumentBox';
-import axios from 'axios';
 import { useUser } from '@/components/Contexts/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import ReserveDialog from './mobileComponents/Dialogs/ReserveDialog';
-import { Skeleton } from '@/components/ui/skeleton';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 
 const MobileDocuments = () => {
@@ -32,7 +31,7 @@ const MobileDocuments = () => {
       return;
     }
 
-    axios.get(`${import.meta.env.VITE_API_URL}/titles/${id}`)
+    axiosInstance.get(`/titles/${id}`)
     .then(response => {
       setDocumentDetails(response.data);
       setIsDialogReserve(true);

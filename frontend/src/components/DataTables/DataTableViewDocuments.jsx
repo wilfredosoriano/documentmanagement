@@ -37,7 +37,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
-import axios from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -58,6 +57,7 @@ import { cn } from "@/lib/utils"
 import { Calendar } from '../ui/calendar';
 import CustomDialog from '../DialogBoxes/CustomDialog';
 import { formatDate } from '@/utils/dateUtils';
+import axiosInstance from '../Interceptors/axiosInstance';
 
 const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClaimConfirm }) => {
   const { toast } = useToast();
@@ -69,7 +69,6 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogClaim, setIsDialogClaim] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [trackingId, setTrackingId] = useState('');
   const [isDialogStatus, setIsDialogStatus] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('');
   const [calendarDate, setCalendarDate] = useState('');
@@ -90,8 +89,8 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   };
 
   const handleViewDocument = (id) => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
+    axiosInstance
+      .get(`/documents/${id}`)
       .then((response) => {
         const data = response.data;
         setDocument(data);
@@ -119,14 +118,13 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
   };
 
   const handleReadyToClaim = (id) => {
-    axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
+    axiosInstance.get(`/documents/${id}`)
     .then((response) => {
       const data = response.data;
       setDocument(data);
       setIsDialogClaim(true);
       setDateError('');
       setCalendarDate('');
-      setTrackingId(data.uniqueId);
       setDocumentId(id);
     })
     .catch((error) => {
@@ -159,14 +157,14 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
 
 
   const handleViewStatus = (id) => {
-    setTrackingId(id);
     setIsDialogStatus(true);
-    axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
+    axiosInstance.get(`/documents/${id}`)
       .then(response => {
         const status = response.data.status;
         const claimedDate = response.data.claimedDate;
         setCurrentStatus(status);
         setClaimedDate(claimedDate);
+        setDocument(response.data);
       })
       .catch(error => {
         console.error('Error fetching document status: ', error);
@@ -409,7 +407,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
           <DialogHeader>
             <DialogTitle className="text-center">Document Status</DialogTitle>
             <DialogDescription className="text-center">
-              Tracking ID: {trackingId} <br />
+              Tracking ID: {document.uniqueId} <br />
               You can track the status of the document here.
             </DialogDescription>
           </DialogHeader>
@@ -420,7 +418,7 @@ const DataTableViewDocument = ({ data, handleDelete, handleDeleteAll, handleClai
       <Dialog open={isDialogClaim} onOpenChange={handleDialogClaimClose}>
         <DialogContent onInteractOutside={(e) => { e.preventDefault(); }}>
           <DialogHeader>
-            <DialogTitle className="text-center">Are you sure you want to set the Tracking ID: {trackingId} as ready to claim?</DialogTitle>
+            <DialogTitle className="text-center">Are you sure you want to set the Tracking ID: {document.uniqueId} as ready to claim?</DialogTitle>
             <DialogDescription className="text-center">
               Please pick a date for the student to claim their requested document.
             </DialogDescription>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { LuGraduationCap, } from 'react-icons/lu';
 
-const MobileRequestTicket = ({ randomNumber, documentName, documentPrice, finalPrice }) => {
+const MobileRequestTicket = ({ randomNumber, documentName, documentPrice, finalPrice, documentDate }) => {
 
   return (
     <div className='m-12 md:m-20 lg:m-32 transition-all'>
@@ -14,7 +14,7 @@ const MobileRequestTicket = ({ randomNumber, documentName, documentPrice, finalP
             </div>
             <div className='flex flex-col items-start'>
                 <h1 className='text-sm md:text-md lg:text-lg'>INVOICE</h1>
-                <p className='text-sm md:text-md lg:text-lg'>Date: 01/05/2025</p>
+                <p className='text-sm md:text-md lg:text-lg'>Date: {documentDate}</p>
                 <p className='text-sm md:text-md lg:text-lg'>Invoice no. {randomNumber}</p>
             </div>
         </div>

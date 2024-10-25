@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import DataTableClaimableDocuments from '@/components/DataTables/DataTableClaimableDocuments';
 import PageHeader from '@/components/PageHeader';
-import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const ClaimableDocuments = () => {
 
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/claimableDocuments`)
+        axiosInstance.get('/claimableDocuments')
         .then(response => {
           setData(response.data);
         }).catch(error => {
@@ -18,7 +18,7 @@ const ClaimableDocuments = () => {
     },[])
 
     const handleClaimConfirm = (id, userId, documentTitle, trackingId) => {
-      axios.put(`${import.meta.env.VITE_API_URL}/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, uniqueId: trackingId })
+      axiosInstance.put(`/claimableDocuments/claimed/${id}`, { userId: userId, document: documentTitle, uniqueId: trackingId })
       .then(response => {
         const { updatedDocument } = response.data;
 
@@ -34,7 +34,7 @@ const ClaimableDocuments = () => {
     }
 
     const handleDelete = (id) => {
-      axios.delete(`${import.meta.env.VITE_API_URL}/claimableDocuments/${id}`)
+      axiosInstance.delete(`/claimableDocuments/${id}`)
         .then(() => {
           setData(prevData => prevData.filter(doc => doc._id !== id));
           toast({
@@ -48,7 +48,7 @@ const ClaimableDocuments = () => {
     };
   
     const handleDeleteAll = () => {
-      axios.delete(`${import.meta.env.VITE_API_URL}/claimableDocuments`)
+      axiosInstance.delete('/claimableDocuments')
         .then(() => {
           setData([]);
           toast({

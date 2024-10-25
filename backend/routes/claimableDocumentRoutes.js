@@ -68,6 +68,10 @@ router.post('/uploadPdf', upload.single('file'), async (req, res) => {
             ],
         });
 
+        fs.unlink(filePath, (err) => {
+            if (err) console.error('Error deleting file: ', err);
+        });
+
             res.status(200).json({ message: 'Email sent successfully', info: info });
         } catch (error) {
             console.error('Error sending email:', error);
@@ -100,6 +104,18 @@ router.get('/:id', async (req, res) => {
       const { id } = req.params;
   
       const document = await claimableDocumentModel.findById(id);
+      res.json(document);
+    } catch (error) {
+      console.error('Failed fetching document: ', error)
+      res.status(500).json({ error: 'Failed to fetch document' });
+    }
+});
+
+router.get('/track/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const document = await documentModel.findOne({ uniqueId: id });
       res.json(document);
     } catch (error) {
       console.error('Failed fetching document: ', error)

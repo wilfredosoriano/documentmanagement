@@ -1,25 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DataTableViewDocument from '@/components/DataTables/DataTableViewDocuments';
 import PageHeader from '@/components/PageHeader';
-import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
 import { useLocation } from 'react-router-dom';
 import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min';
 import MobileRequestTicket from '@/mobile/MobileRequestTicket';
+import { format } from 'date-fns';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const ViewDocuments = () => {
     const [data, setData] = useState([]);
     const location = useLocation();
     const { document } = location.state || {};
-    const randomNumber = Math.floor(Math.random() * (90000 - 10000)) + 10000;
     const invoiceRef = useRef(null);
     const [documentName, setDocumentName] = useState('');
     const [documentPrice, setDocumentPrice] = useState('');
     const [finalPrice, setFinalPrice] = useState('');
+    const [randomNumber, setRandomNumber] = useState('');
+
+    const date = new Date();
+    const documentDate = format(date, 'MM/dd/yy');
+
 
     useEffect(() => {
         if(document){
-            axios.get(`${import.meta.env.VITE_API_URL}/documents/title/${document}`)
+            axiosInstance.get(`/documents/title/${document}`)
             .then(response => {
                 setData(response.data);
             })
@@ -30,7 +35,7 @@ const ViewDocuments = () => {
     }, [])
 
     const handleDelete = (id) => {
-        axios.get(`${import.meta.env.VITE_API_URL}/documents/${id}`)
+        axiosInstance.get(`/documents/${id}`)
         .then(() => {
             setData(prevData => prevData.filter(doc => doc._id !== id));
             toast({
@@ -44,7 +49,7 @@ const ViewDocuments = () => {
 
 
     const handleDeleteAll = () => {
-        axios.delete(`${import.meta.env.VITE_API_URL}/documents`)
+        axiosInstance.delete('/documents')
           .then(() => {
             setData([]);
             toast({
@@ -57,39 +62,36 @@ const ViewDocuments = () => {
           });
       };
 
-    const handleClaimConfirm = (documentId, formattedDate, userId, document) => {
-
+      const handleClaimConfirm = (documentId, formattedDate, userId, document) => {
+       
         setDocumentName(document);
+        const generatedRandomNumber = Math.floor(Math.random() * (90000 - 10000)) + 10000;
+        setRandomNumber(generatedRandomNumber);
 
-        axios.get(`${import.meta.env.VITE_API_URL}/titles/getPrice`,{ params: { document: document }})
-        .then(response => {
-            console.log(response.data);
-            setDocumentPrice(response.data.price);
-            const finalPrice = response.data.price + 20;
-            setFinalPrice(finalPrice);
-        })
-        .catch(error => {
-            console.error('Error fetching price: ', error);
-        });
+        axiosInstance.get('/titles/getPrice', { params: { document: document } })
+            .then(response => {
+                setDocumentPrice(response.data.price);
+                const finalPrice = response.data.price + 20;
+                setFinalPrice(finalPrice);
+                
+                return axiosInstance.post(`/documents/claim/${documentId}`, { claimableDate: formattedDate });
+            })
+            .then(response => {
+                const { updatedDocument } = response.data;
+                setData(prevDocuments => prevDocuments.map(doc => doc._id === updatedDocument._id ? updatedDocument : doc));
+                toast({
+                    description: `Date has been set on ${formattedDate} for claim.`,
+                });
 
-        axios.post(`${import.meta.env.VITE_API_URL}/documents/claim/${documentId}`, { claimableDate: formattedDate })
-        .then(response => {
-            const { updatedDocument } = response.data;
-
-            setData(prevDocuments => prevDocuments.map(doc => doc._id === updatedDocument._id ? updatedDocument : doc));
- 
-            toast({
-            description: `Date has been set on ${formattedDate} for claim.`,
+                handleSavePdf(userId, generatedRandomNumber);
+            })
+            .catch(error => {
+                console.error('Error during claim confirm: ', error);
             });
-            handleSavePdf(userId);
-        })
-        .catch(error => {
-            console.error('Error updating status: ', error);
-        });
-    };
+    };    
 
     //Save the pdf file
-    const handleSavePdf = async (userId) => {
+    const handleSavePdf = async (userId, randomNumber) => {
         const element = invoiceRef.current;
         const opt = {
             margin: 0.5,
@@ -107,16 +109,16 @@ const ViewDocuments = () => {
         formData.append('file', pdfBlob, `invoice_${randomNumber}.pdf`);
         
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/claimableDocuments/uploadPdf`, formData, {
+            const response = await axiosInstance.post('/claimableDocuments/uploadPdf', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
             });
     
             if (response.status === 200) {
-            console.log('PDF saved successfully on the server.');
+                console.log('PDF saved successfully on the server.');
             } else {
-            console.error('Error saving PDF.');
+                console.error('Error saving PDF.');
             }
         } catch (error) {
             console.error('Error while saving PDF:', error);
@@ -141,6 +143,7 @@ const ViewDocuments = () => {
                 documentName={documentName}
                 documentPrice={documentPrice}
                 finalPrice={finalPrice}
+                documentDate={documentDate}
                 />
             </div>
         </div>

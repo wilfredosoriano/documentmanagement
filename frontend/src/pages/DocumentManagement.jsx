@@ -2,9 +2,9 @@ import React, { useMemo, useEffect, useState} from 'react';
 import DataTableDocument from '@/components/DataTables/DataTableDocument';
 import PageHeader from '@/components/PageHeader';
 import { useToast } from '@/components/ui/use-toast';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DialogBoxAddDocument from '@/components/DialogBoxes/DocumentDialogs/DialogBoxAddDocument';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const DocumentManagement = () => {
 
@@ -17,14 +17,17 @@ useEffect(() => {
 }, []);
 
 const fetchDocumentCounts = () => {
-  fetch(`${import.meta.env.VITE_API_URL}/titles/document-counts`)
-  .then(response => response.json())
-  .then(data => setData(data))
-  .catch(error => console.error('Error fetching document counts:', error));
+  axiosInstance.get('/titles/document-counts')
+  .then(response => {
+    const data = response.data;
+    setData(data);
+  }).catch(error => {
+    console.error('Error fetching document counts:', error)
+  });
 }
 
   const handleAddDocument = (documentData) => {
-    axios.post(`${import.meta.env.VITE_API_URL}/titles`, documentData)
+    axiosInstance.post('/titles', documentData)
       .then(response => {
         const newDocument = response.data;
         setData(prevData => [...prevData, newDocument]);
@@ -41,7 +44,7 @@ const fetchDocumentCounts = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/titles`)
+    axiosInstance.delete('/titles')
       .then(() => {
         setData([]);
         toast({
@@ -55,7 +58,7 @@ const fetchDocumentCounts = () => {
   };
 
   const handleEditDocuments = (documentData) => {
-    axios.put(`${import.meta.env.VITE_API_URL}/titles/${documentData.id}`, documentData)
+    axiosInstance.put(`/titles/${documentData.id}`, documentData)
       .then(response => {
         const updatedDocument = response.data;
         setData(prevData => prevData.map(doc => (doc._id === updatedDocument._id ? updatedDocument : doc)));

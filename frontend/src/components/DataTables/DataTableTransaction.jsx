@@ -22,12 +22,11 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import { Input } from '../ui/input';
-import { FolderCheck, LucideSearch, TicketCheck, X } from 'lucide-react';
+import { FolderCheck, LucideSearch, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { LuMoreHorizontal } from 'react-icons/lu';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-import axios from 'axios';
 import DocumentTracking from '../DocumentTracking';
 import { formatDate } from '@/utils/dateUtils';
 
@@ -43,7 +42,7 @@ const DataTableTransaction = ({ data }) => {
     const handleViewStatus = (id) => {
         setTrackingId(id);
         setIsDialogStatus(true);
-        axios.get(`${import.meta.env.VITE_API_URL}/transactions/status/${id}`)
+        axiosInstance.get(`/transactions/status/${id}`)
         .then(response => {
           const status = response.data.status;
           const claimedDate = response.data.claimedDate;
@@ -97,12 +96,6 @@ const DataTableTransaction = ({ data }) => {
                     className="flex items-center gap-1">
                         <FolderCheck/>
                       View Status
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                    onClick={() => handleViewTicket(row.original.title)}
-                    className="flex items-center gap-1">
-                        <TicketCheck />
-                      View Ticket
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

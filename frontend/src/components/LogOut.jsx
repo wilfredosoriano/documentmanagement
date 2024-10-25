@@ -22,9 +22,9 @@ const LogOut = () => {
     navigate('/login'); 
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login'); 
   };
 
   return (

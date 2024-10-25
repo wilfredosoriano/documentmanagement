@@ -3,7 +3,7 @@ import DataTableUser from '@/components/DataTables/DataTableUser';
 import DialogBoxAddUser from '@/components/DialogBoxes/UserDialogs/DialogBoxAddUser';
 import PageHeader from '@/components/PageHeader';
 import { useToast } from '@/components/ui/use-toast';
-import axios from 'axios';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const UserManagement = () => {
   const { toast } = useToast();
@@ -11,7 +11,7 @@ const UserManagement = () => {
 
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/users`)
+    axiosInstance.get('/users')
     .then(response => {
       setData(response.data);
     }).catch(error => {
@@ -20,7 +20,7 @@ const UserManagement = () => {
   },[]) 
 
   const handleAddUser = (userData) => {
-    axios.post(`${import.meta.env.VITE_API_URL}/users`, userData)
+    axiosInstance.post('/users', userData)
       .then(response => {
         const newUser = response.data;
         setData(prevData => [...prevData, newUser]);
@@ -37,7 +37,7 @@ const UserManagement = () => {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/users/${id}`)
+    axiosInstance.delete(`/users/${id}`)
       .then(() => {
         setData(prevData => prevData.filter(user => user._id !== id));
         toast({
@@ -51,7 +51,7 @@ const UserManagement = () => {
   };
 
   const handleDeleteAll = () => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/documents`)
+    axiosInstance.delete('/documents')
       .then(() => {
         setData([]);
         toast({
@@ -65,7 +65,7 @@ const UserManagement = () => {
   };
 
   const handleEditUsers = (userData) => {
-    axios.put(`${import.meta.env.VITE_API_URL}/users/${userData.id}`, userData)
+    axiosInstance.put(`/users/${userData.id}`, userData)
       .then(response => {
         const updatedUser = response.data;
         console.log(updatedUser);

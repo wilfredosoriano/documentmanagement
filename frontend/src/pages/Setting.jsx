@@ -7,7 +7,7 @@ const Setting = () => {
   return (
     <div className="flex flex-col max-h-screen">
       <PageHeader />
-      <div className='mt-20 p-5'>
+      <div className='mt-20 p-5 bg-white'>
         <Profile/>
       </div>
     </div>

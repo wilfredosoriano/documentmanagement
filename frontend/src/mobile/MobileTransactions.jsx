@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Header from './mobileComponents/Header';
 import Navigation from './mobileComponents/Navigation';
 import DataTableTransaction from '@/components/DataTables/DataTableTransaction';
-import axios from 'axios';
 import { useUser } from '@/components/Contexts/UserProvider';
+import axiosInstance from '@/components/Interceptors/axiosInstance';
 
 const MobileTransactions = () => {
 
@@ -22,7 +22,7 @@ const MobileTransactions = () => {
 
   useEffect(() => {
     if(userId){
-      axios.get(`${import.meta.env.VITE_API_URL}/transactions/history/${userId}`)
+      axiosInstance.get(`/transactions/history/${userId}`)
       .then(response => {
         setData(response.data);
       })

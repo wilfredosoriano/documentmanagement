@@ -43,8 +43,8 @@ import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import CustomAlertDialog from '../DialogBoxes/CustomAlertDialog';
 import DocumentTracking from '../DocumentTracking';
-import axios from 'axios';
 import { formatDate } from '@/utils/dateUtils';
+import axiosInstance from '../Interceptors/axiosInstance';
 
 const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDelete }) => {
     const [columnFilters, setColumnFilters] = useState([]);
@@ -61,7 +61,7 @@ const DataTableAppointment = ({ data, handleDeleteAll, handleApprove, handleDele
     const handleViewStatus = (id) => {
         setTrackingId(id);
         setIsDialogStatus(true);
-        axios.get(`${import.meta.env.VITE_API_URL}/appointments/${id}`)
+        axiosInstance.get(`/appointments/${id}`)
           .then(response => {
             const status = response.data.status;
             const claimedDate = response.data.claimedDate;

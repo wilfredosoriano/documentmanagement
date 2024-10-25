@@ -89,6 +89,23 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/track/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const document = await documentModel.findOne({ uniqueId: id });
+    
+    if (!document) {
+      return res.status(404).json({ error: 'Tracking ID not found' });
+    }
+    
+    res.json(document);
+  } catch (error) {
+    console.error('Failed fetching document: ', error)
+    res.status(500).json({ error: 'Failed to fetch document' });
+  }
+});
+
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
